@@ -55,7 +55,7 @@ try {
    // Reload must resume the exact server token after a real UI move.
    const resumed=game === 'kesme' ? Promise.resolve({status:()=>200}) : page.waitForResponse(r=>r.url().endsWith('/api/game')&&r.request().postDataJSON().token===result.token); resumed.catch(()=>{});
    await page.reload();await enter(page,game,true);assert.equal((await resumed).status(),200);
-   if (game === 'kesme') assert.ok(await page.evaluate(()=>Object.entries(localStorage).some(([key,value])=>key.startsWith('kesme2-day-') && JSON.parse(value).cut?.length === 4))); 
+   if (game === 'kesme') assert.ok(await page.evaluate(()=>Object.entries(localStorage).some(([key,value])=>key.startsWith('kesme2-day-') && JSON.parse(value).cut?.length === 4)));
    for(const width of [360,430]) {
     await page.setViewportSize({width,height:844});
     assert.ok(await page.evaluate(()=>document.documentElement.scrollWidth<=innerWidth+1),`${game} ${width}: no horizontal overflow`);
