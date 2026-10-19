@@ -33,7 +33,7 @@ pnpm android
 
 Paket kimliği `com.trpuzzle.mobile`, sürüm **0.2.0**, build **2**. Native oyun istekleri CapacitorHttp üzerinden HTTPS API'ye gönderilir; uygulama uzak siteyi `server.url` ile açmaz.
 
-`main` gönderimlerinde **Native test builds** çalışır. Android işi debug APK, iOS işi imzasız simülatör uygulaması üretir; çıktılar Actions'ta 14 gün saklanır. Simülatör uygulaması fiziksel iPhone'a kurulamaz; iPhone/TestFlight için Apple geliştirici hesabıyla imzalama gerekir. Mağazaya otomatik yayın yapılmaz. Gerçek cihaz paylaşımı, geri tuşu ve çentik alanı kontrolleri ayrıca yapılmalıdır.
+`main` gönderimlerinde ve PR güncellemelerinde **Native test builds** çalışır. Android işi debug APK, iOS işi imzasız simülatör uygulaması üretir; çıktılar Actions'ta 14 gün saklanır. Simülatör uygulaması fiziksel iPhone'a kurulamaz; iPhone/TestFlight için Apple geliştirici hesabıyla imzalama gerekir. Mağazaya otomatik yayın yapılmaz. Gerçek cihaz paylaşımı, geri tuşu ve çentik alanı kontrolleri ayrıca yapılmalıdır.
 
 ## Ortak web kaynakları
 
