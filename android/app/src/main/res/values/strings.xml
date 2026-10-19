@@ -1,0 +1,7 @@
+<?xml version='1.0' encoding='utf-8'?>
+<resources>
+    <string name="app_name">TrPuzzle</string>
+    <string name="title_activity_main">TrPuzzle</string>
+    <string name="package_name">com.trpuzzle.mobile</string>
+    <string name="custom_url_scheme">com.trpuzzle.mobile</string>
+</resources>

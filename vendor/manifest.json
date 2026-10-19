@@ -1,0 +1,31 @@
+{
+  "format": 1,
+  "sources": {
+    "harfle": {
+      "repository": "bozkus24/trpuzzle5",
+      "commit": "801671a3d6f3f22ede0455b18026cf3deadfcd0a",
+      "files": {
+        "index.html": "80413c8266cc3bcb2a9edd84391f145aaecc5039d093c8d27d1e5dc8da827ba0",
+        "game.js": "c66793446c8da1fb8228dea3f85b62ffb9ebe1b93bc8dad0cdf71898d8b90fb4",
+        "style.css": "baadd01d14da50624fb9331994f3a6bf443c4c69ba8e688f59dc4c6e6ead0ef2",
+        "words.js": "1248a6bb0147a3dbc7fe1aa89ba76b1344cf5b14c48066027812bab257c4c1f6",
+        "logo.png": "b10bfeab58c90f7bb8a6fc5a258b542e53fd4757c98ca3b02e1f381d01073ebf",
+        "favicon.png": "4f9eb09097f0ed94a1182ca225b0b59312d2470c7a49a2a99ebe30df56b7b514"
+      }
+    },
+    "trpuzzlemain": {
+      "repository": "bozkus24/trpuzzlemain",
+      "commit": "fd50158ee201cab83472872f55e7593b89cb9cd3",
+      "files": {
+        "assets/game-clock.js": "33a273db736bf4cd43777afc13e1ee8d3912f0b03a21f38379d667c333f3d3fb",
+        "assets/game-security.js": "bfea2ac970e14bbe7a1eec28c0eec98ef04018b26b815cd7ada3d75efc92dc30",
+        "assets/logo.png": "4d5cd3c626400fb3ab82879bb5f408ad972908bc8234369cbf5c9ff85994f894",
+        "assets/fonts.css": "8d7a21c5508912bbd8fb55a7a273cd9243837410d4220fa598289bf93525a2ec",
+        "assets/fonts/fraunces-600-latin.woff2": "7f9d191d999336d3b9790afa72e1358e50a13b06d4f289341e92a311967a80f9",
+        "assets/fonts/fraunces-600-latin-ext.woff2": "a21ecfbf41fbc393e24ef9b7e38532a27e8da5e0a074aa7d66802d1b5ccec2f0",
+        "assets/fonts/fraunces-700-latin.woff2": "7f9d191d999336d3b9790afa72e1358e50a13b06d4f289341e92a311967a80f9",
+        "assets/fonts/fraunces-700-latin-ext.woff2": "a21ecfbf41fbc393e24ef9b7e38532a27e8da5e0a074aa7d66802d1b5ccec2f0"
+      }
+    }
+  }
+}

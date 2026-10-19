@@ -1,0 +1,8 @@
+{
+  "appId": "com.trpuzzle.mobile",
+  "appName": "TrPuzzle",
+  "webDir": "dist",
+  "backgroundColor": "#f7f6f2",
+  "ios": { "contentInset": "never", "backgroundColor": "#f7f6f2" },
+  "android": { "backgroundColor": "#f7f6f2" }
+}

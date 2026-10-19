@@ -1,0 +1,3 @@
+*.bat text eol=crlf
+# Preserve the pinned upstream bytes, including their existing formatting.
+vendor/** -whitespace -text

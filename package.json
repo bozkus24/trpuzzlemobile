@@ -1,0 +1,33 @@
+{
+  "name": "trpuzzlemobile",
+  "version": "0.1.0",
+  "private": true,
+  "type": "module",
+  "description": "TrPuzzle iOS ve Android — Harfle mobil prototipi",
+  "engines": { "node": ">=22" },
+  "scripts": {
+    "sync:games": "node tools/sync-games.mjs",
+    "build": "node tools/build.mjs",
+    "dev": "node tools/preview.mjs",
+    "test": "node --test tests/*.test.mjs",
+    "test:e2e": "node tests/browser.mjs",
+    "native:sync": "node tools/build.mjs && cap sync",
+    "ios": "cap open ios",
+    "android": "cap open android"
+  },
+  "dependencies": {
+    "@capacitor/android": "^8.0.0",
+    "@capacitor/app": "^8.0.0",
+    "@capacitor/core": "^8.0.0",
+    "@capacitor/haptics": "^8.0.0",
+    "@capacitor/ios": "^8.0.0",
+    "@capacitor/preferences": "^8.0.0",
+    "@capacitor/share": "^8.0.0"
+  },
+  "devDependencies": {
+    "@capacitor/cli": "^8.0.0",
+    "esbuild": "^0.25.0",
+    "playwright": "^1.56.0"
+  },
+  "packageManager": "pnpm@10.11.0"
+}

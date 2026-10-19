@@ -1,0 +1,71 @@
+name: Native test builds
+on:
+  push:
+    branches: [main]
+  workflow_dispatch:
+permissions:
+  contents: read
+concurrency:
+  group: native-${{ github.ref }}
+  cancel-in-progress: true
+jobs:
+  android:
+    runs-on: ubuntu-latest
+    timeout-minutes: 25
+    steps:
+      - uses: actions/checkout@v4
+      - uses: pnpm/action-setup@v4
+        with:
+          version: 10.11.0
+      - uses: actions/setup-node@v4
+        with:
+          node-version: 22
+          cache: pnpm
+      - uses: actions/setup-java@v4
+        with:
+          distribution: temurin
+          java-version: '21'
+      - uses: android-actions/setup-android@v3
+      - run: sdkmanager 'platforms;android-36' 'build-tools;36.0.0'
+      - run: pnpm install --frozen-lockfile
+      - run: pnpm build && pnpm test && pnpm exec cap sync android
+      - name: Build installable debug APK
+        working-directory: android
+        run: bash gradlew assembleDebug --no-daemon
+      - uses: actions/upload-artifact@v4
+        with:
+          name: trpuzzle-android-debug
+          path: android/app/build/outputs/apk/debug/app-debug.apk
+          if-no-files-found: error
+          retention-days: 14
+  ios:
+    runs-on: macos-15
+    timeout-minutes: 30
+    env:
+      DEVELOPER_DIR: /Applications/Xcode_26.3.app/Contents/Developer
+    steps:
+      - uses: actions/checkout@v4
+      - uses: pnpm/action-setup@v4
+        with:
+          version: 10.11.0
+      - uses: actions/setup-node@v4
+        with:
+          node-version: 22
+          cache: pnpm
+      - run: xcodebuild -version
+      - run: pnpm install --frozen-lockfile
+      - run: pnpm build && pnpm test && pnpm exec cap sync ios
+      - name: Build unsigned simulator app
+        run: >-
+          xcodebuild -project ios/App/App.xcodeproj -scheme App
+          -configuration Debug -sdk iphonesimulator
+          -destination 'generic/platform=iOS Simulator'
+          -derivedDataPath build/ios CODE_SIGNING_ALLOWED=NO build
+      - name: Package simulator app
+        run: ditto -c -k --sequesterRsrc --keepParent build/ios/Build/Products/Debug-iphonesimulator/App.app build/TrPuzzle-iOS-Simulator.zip
+      - uses: actions/upload-artifact@v4
+        with:
+          name: trpuzzle-ios-simulator
+          path: build/TrPuzzle-iOS-Simulator.zip
+          if-no-files-found: error
+          retention-days: 14

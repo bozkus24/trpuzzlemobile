@@ -1,0 +1,60 @@
+/* Game appearance comes exclusively from the web game's style.css.
+   Keep this adapter limited to device insets, scrolling and connection UI. */
+html, body { overscroll-behavior-y: none; }
+body.mobile-game {
+  padding: env(safe-area-inset-top) env(safe-area-inset-right)
+    env(safe-area-inset-bottom) env(safe-area-inset-left);
+}
+body.mobile-game #app {
+  min-height: calc(100svh - env(safe-area-inset-top) - env(safe-area-inset-bottom));
+}
+.mobile-game .overlay {
+  padding-top: max(20px, env(safe-area-inset-top));
+  padding-bottom: max(20px, env(safe-area-inset-bottom));
+  overscroll-behavior: contain;
+}
+.mobile-game .modal {
+  max-height: min(88dvh, calc(100dvh - 40px - env(safe-area-inset-top) - env(safe-area-inset-bottom)));
+  overscroll-behavior: contain;
+}
+.mobile-game .geri-sayim { display: none; }
+.mobile-game.dialog-open { overflow: hidden; }
+.mobile-game #archive {
+  max-height: calc(100dvh - env(safe-area-inset-top) - env(safe-area-inset-bottom));
+}
+.mobile-game #connection {
+  padding: 10px 14px;
+  max-width: 520px;
+  margin: auto;
+  background: var(--panel);
+  color: var(--text);
+  border-bottom: 1px solid var(--border);
+  font-size: 12px;
+  line-height: 1.5;
+}
+.mobile-game #load-error {
+  margin: 16px auto;
+  padding: 20px;
+  max-width: 480px;
+  background: var(--panel);
+  border: 1px solid var(--border);
+  border-radius: var(--radius);
+  text-align: center;
+  line-height: 1.6;
+}
+.mobile-game #load-error button, .mobile-game #load-error a {
+  display: inline-block;
+  padding: 12px 16px;
+  margin: 8px 4px;
+  background: var(--correct);
+  color: #fff;
+  border: 0;
+  border-radius: 6px;
+  text-decoration: none;
+  font: 600 14px system-ui;
+}
+.mobile-game.api-busy #retry-game { opacity: .5; pointer-events: none; }
+.mobile-game :focus-visible { outline: 3px solid var(--correct); outline-offset: 2px; }
+@media (prefers-reduced-motion: reduce) {
+  .mobile-game * { animation: none !important; transition: none !important; }
+}
