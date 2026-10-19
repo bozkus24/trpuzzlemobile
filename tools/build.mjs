@@ -2,6 +2,7 @@ import { readFile, writeFile, mkdir, cp, rm } from 'node:fs/promises';
 import { createHash } from 'node:crypto';
 import path from 'node:path';
 import { build } from 'esbuild';
+import { packageWeb } from './package-web.mjs';
 const root = path.resolve(import.meta.dirname, '..');
 const output = path.join(root, 'dist');
 const api = process.env.TRPUZZLE_API_URL || 'https://trpuzzle.com/api/game';
@@ -44,9 +45,10 @@ await writeFile(path.join(output, 'harfle/index.html'), `<!doctype html>
 <div id="connection" role="status" hidden></div>
 <div id="load-error" role="alert" hidden><p id="load-error-text"></p><button id="retry-game">Yeniden dene</button><a href="/">Ana sayfa</a></div>
 ${ui}<script src="/assets/mobile.js"></script></body></html>`);
+await packageWeb(root, output, manifest);
 await build({ entryPoints: [path.join(root, 'src/bootstrap.js')], outfile: path.join(output, 'assets/mobile.js'), bundle: true,
   format: 'iife', target: ['safari15', 'chrome100'], define: { __API_URL__: JSON.stringify(api) }, minify: true });
 // Defense in depth: do not ship source HTML, answer tables or advertising loaders.
 const html = await readFile(path.join(output, 'harfle/index.html'), 'utf8');
 if (/adsbygoogle|privacy-controls|google-adsense|<iframe/i.test(html)) throw new Error('Unexpected web-only integration in mobile HTML');
-console.log('Built dist/: local app shell + shared Harfle, API:', api);
+console.log('Built dist/: local app shell + all eight shared games, API:', api);

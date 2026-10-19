@@ -1,6 +1,6 @@
 import test from 'node:test';
 import assert from 'node:assert/strict';
-import { installPersistence } from '../src/storage.js';
+import { installPersistence, isGameKey } from '../src/storage.js';
 test('native records hydrate before play and writes stay ordered', async () => {
   class Storage {
     data = new Map([['trw-stats', '{"played":1}']]);
@@ -27,4 +27,9 @@ test('native records hydrate before play and writes stay ordered', async () => {
   assert.deepEqual(operations.slice(-2), ['first', 'second']);
   store.removeItem('trw-2026-10-19'); await bridge.flush();
   assert.equal(persisted.has('trw-2026-10-19'), false);
+});
+
+test('native persistence covers all eight games and excludes unrelated data', () => {
+  for (const key of ['trw-stats', 'word500tr.oyun.zor.2026-10-19', 'baglantilar.2026-10-03.gunluk.16', 'kesme2-day-2026-10-19', 'kesme-help-seen', 'petek-progress-v1', 'waffle-theme-v1', 'foximax-daily-80', 'aradle_days_v2', 'iller-globle:daily:2026-10-19']) assert.equal(isGameKey(key), true, key);
+  for (const key of ['auth-token', 'other-game', 'theme', 'api-key']) assert.equal(isGameKey(key), false, key);
 });

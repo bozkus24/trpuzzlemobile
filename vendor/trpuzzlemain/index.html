@@ -1,0 +1,1471 @@
+<!DOCTYPE html>
+<html lang="tr">
+<head>
+<script defer id="tp-privacy-script" src="/assets/privacy-controls.js?v=consent-v1"></script>
+<meta name="google-adsense-account" content="ca-pub-7993571496408496">
+
+  <meta charset="UTF-8">
+  <meta name="viewport" content="width=device-width, initial-scale=1.0">
+
+  <title>TrPuzzle - Oyunlar</title>
+  <meta name="description" content="trpuzzle.com'da Harfle, Harf500, Baklava, Bağla, Kesme, Şehirle, Tilkile ve Arala: günlük Türkçe bulmaca oyunları tek sayfada.">
+  <link rel="icon" href="/favicon.ico" sizes="32x32">
+  <link rel="icon" type="image/png" href="/assets/favicon.png" sizes="192x192">
+  <meta name="theme-color" content="#f4f2ec">
+  <link rel="canonical" href="https://trpuzzle.com/">
+  <meta property="og:type" content="website">
+  <meta property="og:site_name" content="TrPuzzle">
+  <meta property="og:title" content="TrPuzzle - Günlük Türkçe Bulmacalar">
+  <meta property="og:description" content="Harfle, Harf500, Baklava, Bağla, Kesme, Şehirle, Tilkile ve Arala: sekiz günlük Türkçe bulmaca oyunu tek sayfada.">
+  <meta property="og:url" content="https://trpuzzle.com/">
+  <meta property="og:image" content="https://trpuzzle.com/og.png">
+  <meta property="og:image:width" content="256">
+  <meta property="og:image:height" content="256">
+  <meta name="twitter:card" content="summary">
+  <!-- Fontlar yerelde barındırılır; hiçbir harici sunucuya istek atılmaz -->
+  <link rel="stylesheet" href="assets/fonts.css">
+  <!-- Stiller inline gömüldü: harici tek CSS isteği başarısız olunca sayfanın
+       çıplak render olma bug'ı bunu engeller (alt sayfalarla aynı desen). -->
+  <style>
+/* ═══════════════════════════════════════════════════════════
+   TrPuzzle - Anasayfa stilleri (her zaman aydınlık mod)
+   Koyu mod anasayfadan kaldırıldı; oyunlarda kendi temaları sürer.
+   Oyun vurgu renkleri kart üzerinde --acc-dark/--acc-lite olarak
+   tanımlıdır; aktif temaya göre --acc'e bağlanır.
+   ═══════════════════════════════════════════════════════════ */
+
+/* Anasayfa her zaman aydınlık - koyu mod yalnızca oyunlarda var */
+:root {
+  --bg: #f4f2ec;
+  --surface: #ffffff;
+  --line: #e2dfd6;
+  --ink: #1d1f24;
+  --ink-soft: #5b6068;
+  --gold: #b8860b;
+  --halo: #dce6f2;
+  --header-bg: rgba(244, 242, 236, 0.85);
+  --hover-bg: #e9e6de;
+  --drawer-bg: #faf9f5;
+  --drawer-hover: #edeae2;
+  --btn-border: #c9c5ba;
+  --btn-hover-ink: #ffffff;
+  --footer-ink: #8a8f98;
+  --toast-bg: #1d1f24;
+  --toast-ink: #f4f2ec;
+  --card-shadow: 0 14px 30px rgba(30, 33, 40, 0.12);
+  --display: "Fraunces", Georgia, "Times New Roman", serif;
+  --sans: -apple-system, BlinkMacSystemFont, "Segoe UI", "Helvetica Neue", Arial, sans-serif;
+}
+
+* { margin: 0; padding: 0; box-sizing: border-box; }
+
+html { -webkit-text-size-adjust: 100%; touch-action: manipulation; }
+
+body {
+  font-family: var(--sans);
+  background:
+    radial-gradient(1100px 480px at 50% -140px, var(--halo) 0%, transparent 62%),
+    var(--bg);
+  color: var(--ink);
+  min-height: 100vh;
+  display: flex;
+  flex-direction: column;
+}
+
+/* Oyun vurgusu: aydınlık palet renkleri */
+.game-card { --acc: var(--acc-lite, var(--gold)); }
+
+/* ─────────────── Üst bar ─────────────── */
+
+.site-header {
+  position: sticky;
+  top: 0;
+  z-index: 50;
+  display: flex;
+  align-items: center;
+  gap: 12px;
+  height: 64px;
+  padding: 0 20px;
+  background: var(--header-bg);
+  backdrop-filter: blur(10px);
+  -webkit-backdrop-filter: blur(10px);
+  border-bottom: 1px solid var(--line);
+}
+
+.menu-btn {
+  display: inline-flex;
+  align-items: center;
+  justify-content: center;
+  width: 42px;
+  height: 42px;
+  border: none;
+  border-radius: 10px;
+  background: transparent;
+  color: var(--ink);
+  cursor: pointer;
+}
+
+.menu-btn:hover { background: var(--hover-bg); }
+
+.brand {
+  display: inline-flex;
+  align-items: center;
+  gap: 11px;
+  color: var(--ink);
+  text-decoration: none;
+  line-height: 1;
+}
+
+.brand-logo {
+  display: block;
+  height: 38px;
+  width: auto;
+}
+
+.brand-text {
+  font-family: var(--display);
+  font-weight: 600;
+  font-size: 24px;
+  letter-spacing: 0.3px;
+}
+
+@media (max-width: 720px) {
+  .brand-logo { height: 33px; }
+  .brand-text { font-size: 21px; }
+}
+
+/* ─────────────── Yan menü ─────────────── */
+
+.overlay {
+  position: fixed;
+  inset: 0;
+  z-index: 90;
+  background: rgba(0, 0, 0, 0.55);
+  opacity: 0;
+  pointer-events: none;
+  transition: opacity 0.25s ease;
+}
+
+.overlay.open { opacity: 1; pointer-events: auto; }
+
+.drawer {
+  position: fixed;
+  top: 0;
+  left: 0;
+  bottom: 0;
+  z-index: 100;
+  width: min(300px, 84vw);
+  background: var(--drawer-bg);
+  border-right: 1px solid var(--line);
+  box-shadow: 8px 0 32px rgba(0, 0, 0, 0.45);
+  transform: translateX(-103%);
+  transition: transform 0.28s cubic-bezier(0.33, 1, 0.68, 1);
+  display: flex;
+  flex-direction: column;
+}
+
+.drawer.open { transform: translateX(0); }
+
+.drawer-header {
+  display: flex;
+  align-items: center;
+  justify-content: space-between;
+  padding: 17px 20px;
+  border-bottom: 1px solid var(--line);
+}
+
+.drawer-title {
+  font-family: var(--display);
+  font-weight: 600;
+  font-size: 20px;
+}
+
+.drawer-close {
+  display: inline-flex;
+  align-items: center;
+  justify-content: center;
+  width: 38px;
+  height: 38px;
+  border: none;
+  border-radius: 10px;
+  background: transparent;
+  color: var(--ink);
+  cursor: pointer;
+}
+
+.drawer-close:hover { background: var(--hover-bg); }
+
+.drawer-nav {
+  padding: 12px 10px;
+  overflow-y: auto;
+}
+
+/* Oyun satırı: logo + isim + chevron; tıklayınca Oyna/Arşiv açılır (native details) */
+.drawer-row {
+  list-style: none;
+  display: flex;
+  align-items: center;
+  gap: 6px;
+  padding: 3px 8px 3px 12px;
+  border-radius: 10px;
+  font-weight: 600;
+  font-size: 15.5px;
+  color: var(--ink);
+  text-decoration: none;
+}
+.drawer-row::-webkit-details-marker { display: none; }
+.drawer-row:hover { background: var(--drawer-hover); }
+
+/* Logo + isim: tıklayınca doğrudan oyun açılır */
+.drawer-main {
+  flex: 1;
+  min-width: 0;
+  display: flex;
+  align-items: center;
+  gap: 13px;
+  padding: 7px 0;
+  color: inherit;
+  text-decoration: none;
+}
+
+/* Yalnızca ok alanı açar/kapatır */
+.drawer-toggle {
+  display: inline-flex;
+  align-items: center;
+  justify-content: center;
+  width: 34px;
+  height: 34px;
+  border-radius: 9px;
+  cursor: pointer;
+  flex-shrink: 0;
+}
+.drawer-toggle:hover { background: rgba(0, 0, 0, 0.07); }
+
+/* Arşivi olmayan oyun (Şehirle): tek parça satır */
+.drawer-solo { gap: 13px; padding: 10px 12px; }
+
+/* İkon: beyaz zemin yok, ince siyah çerçeve */
+.drawer-ico {
+  display: inline-flex;
+  align-items: center;
+  justify-content: center;
+  width: 42px;
+  height: 42px;
+  flex-shrink: 0;
+}
+.drawer-ico svg,
+.drawer-ico img,
+.drawer-ico .drawer-ico-mask {
+  display: block;
+  width: var(--ico-size, 38px);
+  height: var(--ico-size, 38px);
+  object-fit: contain;
+}
+.drawer-ico-mask {
+  background-color: currentColor;
+  -webkit-mask-repeat: no-repeat; mask-repeat: no-repeat;
+  -webkit-mask-position: center; mask-position: center;
+  -webkit-mask-size: contain; mask-size: contain;
+}
+
+.drawer-name { flex: 1; }
+
+.drawer-chev {
+  width: 18px;
+  height: 18px;
+  color: var(--ink-soft);
+  flex-shrink: 0;
+  transition: transform 0.2s ease;
+}
+.drawer-item[open] .drawer-chev { transform: rotate(180deg); }
+
+/* Açılan bölüm: buton değil, düz metin bağlantısı */
+.drawer-sub {
+  display: flex;
+  flex-direction: column;
+  padding: 0 12px 6px 16px;
+}
+.drawer-sub a {
+  padding: 8px 0;
+  font-weight: 500;
+  font-size: 14.5px;
+  color: var(--ink-soft);
+  text-decoration: none;
+}
+.drawer-sub a:hover { color: var(--ink); text-decoration: underline; }
+
+/* Menüdeki alt sayfa linkleri (oyunların altında) */
+.drawer-sep {
+  height: 1px;
+  background: var(--line);
+  margin: 9px 14px;
+}
+
+.drawer-page {
+  display: flex;
+  align-items: center;
+  padding: 12px 14px;
+  border-radius: 10px;
+  font-weight: 600;
+  font-size: 14.5px;
+  color: var(--ink-soft);
+  text-decoration: none;
+}
+
+.drawer-page:hover { background: var(--drawer-hover); color: var(--ink); }
+
+/* Menünün en altı: sosyal medya bağlantıları */
+/* Bölüm başlığı: Oyunlar / Sosyal Medya */
+.drawer-baslik {
+  padding: 16px 14px 6px;
+  font-size: 11.5px;
+  font-weight: 700;
+  letter-spacing: .09em;
+  text-transform: uppercase;
+  color: var(--footer-ink);
+}
+.drawer-nav > .drawer-baslik:first-child { padding-top: 2px; }
+/* Sosyal blok artık listenin içinde, dibe yapışmıyor */
+.drawer-social { padding: 0; }
+
+.drawer-social a {
+  display: flex;
+  align-items: center;
+  gap: 11px;
+  padding: 9px 14px;
+  border-radius: 10px;
+  font-weight: 600;
+  font-size: 13.5px;
+  color: var(--ink-soft);
+  text-decoration: none;
+}
+
+.drawer-social a:hover { background: var(--drawer-hover); color: var(--ink); }
+
+.drawer-social svg { width: 17px; height: 17px; flex-shrink: 0; }
+
+/* ─────────────── Başlık ─────────────── */
+
+main {
+  flex: 1;
+  width: 100%;
+  max-width: 1060px;
+  margin: 0 auto;
+  padding: 52px 24px 72px;
+}
+
+.page-eyebrow {
+  font-size: 12px;
+  font-weight: 700;
+  letter-spacing: 0.22em;
+  text-transform: uppercase;
+  color: var(--gold);
+}
+
+.page-title {
+  font-family: var(--display);
+  font-weight: 600;
+  font-size: clamp(32px, 4.6vw, 46px);
+  line-height: 1.12;
+  text-wrap: balance;
+  max-width: 15ch;
+  margin-top: 10px;
+}
+
+.page-subtitle {
+  color: var(--ink-soft);
+  font-size: 15.5px;
+  line-height: 1.5;
+  margin-top: 12px;
+  margin-bottom: 40px;
+  max-width: 46ch;
+}
+
+/* Günlük takip: kartlarla aynı ikonlar ve oyun renkleri. */
+.daily-tracker { max-width: 540px; margin: -14px 0 32px; }
+.tracker-heading { display:flex; align-items:baseline; justify-content:space-between; gap:12px; margin-bottom:12px; }
+.tracker-title { font-size:13px; font-weight:600; color:var(--ink); }
+.tracker-count { font-size:12px; color:var(--ink-soft); font-variant-numeric:tabular-nums; }
+.tracker-games { display:grid; grid-template-columns:repeat(8,minmax(0,1fr)); gap:9px; }
+.tracker-game { position:relative; display:flex; align-items:center; justify-content:center; aspect-ratio:1; border:1px solid var(--line); border-radius:14px; background:var(--surface); color:var(--acc-lite); text-decoration:none; transition:background .15s,border-color .15s; }
+.tracker-icon { position:absolute; left:50%; top:50%; transform:translate(-50%,-50%); display:flex; align-items:center; justify-content:center; width:var(--tracker-icon-size,68%); height:var(--tracker-icon-size,68%); opacity:.72; filter:grayscale(.75); }
+/* SVG iç boşlukları ve logoların biçimleri için görsel boyut dengelemesi. */
+.tracker-game[data-game="Harfle"] { --tracker-icon-size:78%; }
+.tracker-game[data-game="Harf500"] { --tracker-icon-size:73%; }
+.tracker-game[data-game="Baklava"] { --tracker-icon-size:65%; }
+.tracker-game[data-game="Arala"] { --tracker-icon-size:70%; }
+.tracker-game[data-game="Tilkile"] { --tracker-icon-size:62%; }
+.tracker-game[data-game="Kesme"] { --tracker-icon-size:76%; }
+.tracker-game[data-game="Bağla"] { --tracker-icon-size:56%; }
+.tracker-game[data-game="Şehirle"] { --tracker-icon-size:82%; }
+.tracker-icon svg,.tracker-icon img,.tracker-icon .card-logo { display:block; width:100%; height:100%; object-fit:contain; object-position:center; margin:0; }
+.tracker-game[data-state="started"],.tracker-game[data-state="completed"] { background:color-mix(in srgb,var(--acc-lite) 10%,var(--surface)); border-color:color-mix(in srgb,var(--acc-lite) 40%,var(--line)); }
+.tracker-game[data-state="started"] .tracker-icon,.tracker-game[data-state="completed"] .tracker-icon { opacity:1; filter:none; }
+.tracker-mark { position:absolute; right:-3px; bottom:-3px; width:17px; height:17px; display:none; align-items:center; justify-content:center; border-radius:50%; background:var(--acc-lite); color:var(--surface); border:2px solid var(--bg); }
+.tracker-mark svg { width:11px; height:11px; }
+.tracker-game[data-state="completed"] .tracker-mark { display:flex; }
+.tracker-game[data-state="started"] { border:2px dashed var(--acc-lite); }
+.tracker-game[data-state="started"] .tracker-mark { display:flex; }
+.tracker-mark .tracker-resume { display:none; }
+.tracker-game[data-state="started"] .tracker-check { display:none; }
+.tracker-game[data-state="started"] .tracker-resume { display:block; width:12px; height:12px; }
+.tracker-game:hover { border-color:var(--acc-lite); }
+.tracker-game:focus-visible { outline:2px solid var(--ink); outline-offset:4px; }
+.tracker-bar { height:3px; margin-top:15px; border-radius:3px; background:var(--line); overflow:hidden; }
+.tracker-bar-fill { height:100%; width:0; background:var(--gold); border-radius:inherit; }
+@media(max-width:480px) {
+  .tracker-games { grid-template-columns:repeat(8,minmax(0,1fr)); gap:clamp(3px,1.2vw,6px); }
+  .tracker-game { border-radius:10px; }
+  .tracker-mark { width:15px; height:15px; }
+}
+
+/* ─────────────── Oyun kartları ─────────────── */
+
+.games-grid {
+  display: flex;
+  flex-wrap: wrap;
+  justify-content: center;
+  align-items: flex-start;   /* biri açılınca diğerleri uzamasın */
+  gap: 16px;
+}
+
+.game-card {
+  position: relative;
+  display: flex;
+  flex-direction: column;
+  /* 3 sütun; son satırdaki 2 kart flex + justify-content ile ortalanır */
+  width: calc((100% - 2 * 16px) / 3);
+  background: var(--surface);
+  border: 1px solid var(--line);
+  border-radius: 16px;
+  overflow: hidden;
+  transition: transform 0.18s ease, border-color 0.18s ease, box-shadow 0.18s ease;
+}
+
+.game-card:hover {
+  transform: translateY(-4px);
+  border-color: color-mix(in srgb, var(--acc) 55%, var(--line));
+  box-shadow: var(--card-shadow);
+}
+
+/* Renkli üst blok - logonun temasına (vurgu rengi) göre tonlanır; logo + isim ortalı */
+.card-top {
+  display: flex;
+  flex-direction: column;
+  align-items: center;
+  justify-content: center;
+  gap: 12px;
+  padding: 26px 14px 22px;
+  text-align: center;
+  background: var(--acc);
+  background: color-mix(in srgb, var(--acc) 28%, var(--surface));
+}
+
+.card-icon {
+  display: flex;
+  align-items: center;
+  justify-content: center;
+  height: 84px;
+  color: var(--acc);
+}
+
+.card-icon svg,
+.card-icon img,
+.card-icon .card-logo {
+  display: block;
+  width: var(--ico-size, 60px);
+  height: var(--ico-size, 60px);
+  object-fit: contain;
+}
+
+/* Çizgi-sanat logolar: mask ile vurgu rengine (currentColor) boyanır */
+.card-logo {
+  background-color: currentColor;
+  -webkit-mask-position: center;
+  mask-position: center;
+  -webkit-mask-repeat: no-repeat;
+  mask-repeat: no-repeat;
+  -webkit-mask-size: contain;
+  mask-size: contain;
+}
+
+.card-logo-tilkile {
+  -webkit-mask-image: url(assets/tilkile.png);
+  mask-image: url(assets/tilkile.png);
+}
+
+.card-name {
+  font-family: var(--display);
+  font-weight: 600;
+  font-size: 23px;
+  line-height: 1.15;
+  color: var(--ink);
+}
+
+/* Alt blok - butonlar + gizli açıklama */
+.card-bottom {
+  display: flex;
+  flex-direction: column;
+  gap: 8px;
+  padding: 14px 14px 8px;
+}
+
+.card-foot {
+  display: flex;
+  flex-direction: column;
+  gap: 8px;
+}
+
+/* Açıklama varsayılan gizli; alttaki ok ile açılır (native details/summary) */
+.card-desc-wrap {
+  border-top: 1px solid var(--line);
+  margin-top: 4px;
+}
+
+.card-desc-toggle {
+  list-style: none;
+  display: flex;
+  align-items: center;
+  justify-content: center;
+  padding: 7px 0 5px;
+  cursor: pointer;
+  color: var(--ink-soft);
+}
+.card-desc-toggle::-webkit-details-marker { display: none; }
+.card-desc-toggle svg {
+  width: 20px;
+  height: 20px;
+  transition: transform 0.22s ease;
+}
+.card-desc-toggle:hover { color: var(--ink); }
+.card-desc-wrap[open] .card-desc-toggle svg { transform: rotate(180deg); }
+
+.card-desc {
+  font-size: 13px;
+  line-height: 1.5;
+  color: var(--ink-soft);
+  padding: 2px 2px 8px;
+  text-align: left;
+}
+
+/* İkincil (arşiv) buton - Oyna'nın altında, daha sakin */
+.btn-bosluk { visibility: hidden; pointer-events: none; }
+
+.btn-arsiv {
+  height: 38px;
+  font-size: 13px;
+  font-weight: 600;
+  color: var(--ink-soft);
+  border-color: var(--line);
+}
+
+/* ─────────────── Tanıtım bölümü ─────────────── */
+
+.about-band {
+  margin-top: 56px;
+  margin-inline: auto;
+  text-align: center;
+  padding-top: 34px;
+  border-top: 1px solid var(--line);
+  max-width: 68ch;
+}
+
+.about-band h2 {
+  font-family: var(--display);
+  font-weight: 600;
+  font-size: 24px;
+  margin-bottom: 12px;
+  text-wrap: balance;
+}
+
+.about-band p {
+  font-size: 15px;
+  line-height: 1.7;
+  color: var(--ink-soft);
+}
+
+.about-band p + p { margin-top: 12px; }
+
+.about-band a { color: var(--gold); }
+
+/* ─────────────── Butonlar ─────────────── */
+
+.btn {
+  display: inline-flex;
+  align-items: center;
+  justify-content: center;
+  gap: 8px;
+  width: 100%;
+  height: 44px;
+  border: 1px solid var(--btn-border);
+  border-radius: 999px;
+  background: transparent;
+  color: var(--ink);
+  font-family: var(--sans);
+  font-weight: 700;
+  font-size: 14.5px;
+  letter-spacing: 0.02em;
+  text-decoration: none;
+  cursor: pointer;
+  transition: background 0.16s ease, color 0.16s ease, border-color 0.16s ease;
+}
+
+.btn:hover {
+  background: var(--acc, var(--gold));
+  border-color: var(--acc, var(--gold));
+  color: var(--btn-hover-ink);
+}
+
+.btn:active { transform: translateY(1px); }
+
+/* Klavye odağı */
+.btn:focus-visible,
+.menu-btn:focus-visible,
+.drawer-close:focus-visible,
+.drawer-row:focus-visible,
+.drawer-sub a:focus-visible,
+.brand:focus-visible {
+  outline: 2px solid var(--gold);
+  outline-offset: 3px;
+}
+
+/* ─────────────── Alt bilgi ─────────────── */
+
+.site-footer {
+  border-top: 1px solid var(--line);
+  padding: 22px 24px 30px;
+  text-align: center;
+  color: var(--footer-ink);
+  font-size: 13px;
+}
+
+.footer-links {
+  display: flex;
+  justify-content: center;
+  gap: 18px;
+  margin-top: 8px;
+}
+
+.footer-links a {
+  color: var(--footer-ink);
+  text-decoration: underline;
+  text-underline-offset: 3px;
+}
+
+.footer-links a:hover { color: var(--ink); }
+
+/* ─────────────── Toast ─────────────── */
+
+.toast {
+  position: fixed;
+  left: 50%;
+  bottom: 30px;
+  z-index: 200;
+  transform: translateX(-50%) translateY(16px);
+  background: var(--toast-bg);
+  color: var(--toast-ink);
+  font-weight: 700;
+  font-size: 14.5px;
+  padding: 12px 22px;
+  border-radius: 999px;
+  box-shadow: 0 10px 30px rgba(0, 0, 0, 0.5);
+  opacity: 0;
+  pointer-events: none;
+  transition: opacity 0.22s ease, transform 0.22s ease;
+  max-width: calc(100vw - 40px);
+  text-align: center;
+}
+
+.toast.show {
+  opacity: 1;
+  transform: translateX(-50%) translateY(0);
+}
+
+/* ─────────────── Duyarlı düzen ─────────────── */
+
+/* Her ekran boyutunda giriş bölümü kart ızgarasının merkezinde dursun. */
+.page-eyebrow, .page-title, .page-subtitle { text-align:center; }
+.page-title { max-width:22ch; margin-inline:auto; }
+.page-subtitle { max-width:58ch; margin-inline:auto; }
+.daily-tracker { margin-inline:auto; }
+
+@media (max-width: 900px) {
+  main { padding: 38px 18px 56px; }
+}
+
+/* Mobil: her satırda 2 dikey kart (tek satırı bir oyun kaplamaz) */
+@media (max-width: 640px) {
+  .games-grid { gap: 12px; }
+  .game-card { width: calc((100% - 12px) / 2); }  /* 2 sütun */
+
+  .card-top { padding: 22px 10px 18px; gap: 10px; }
+  .card-icon { height: 69px; }
+  .card-icon svg, .card-icon img, .card-icon .card-logo {
+    width: calc(var(--ico-size, 60px) * .82);
+    height: calc(var(--ico-size, 60px) * .82);
+  }
+  .card-name { font-size: 18.5px; }
+
+  .card-bottom { padding: 12px 11px 6px; }
+  .btn { height: 40px; font-size: 13.5px; }
+  .btn-arsiv { height: 36px; }
+  .card-desc { font-size: 12.5px; }
+}
+
+/* Hareket azaltma tercihi */
+@media (prefers-reduced-motion: reduce) {
+  .game-card, .btn, .drawer, .overlay, .toast { transition: none; }
+  .game-card:hover { transform: none; }
+}
+
+/* Oyun seçimi: tek belirgin eylem ve her zaman görünen kısa açıklama. */
+.card-tagline { font-size:13px; line-height:1.5; color:var(--ink-soft); max-width:28ch; min-height:3em; margin:0; }
+.card-top { gap:8px; }
+.btn-play { background:var(--ink); color:var(--surface); border-color:var(--ink); }
+.btn-play:hover { background:var(--acc-lite); border-color:var(--acc-lite); color:white; }
+.btn-arsiv { border-color:transparent; color:var(--ink-soft); font-weight:500; }
+.btn-arsiv:hover, .btn-arsiv:focus-visible { background:var(--bg); border-color:transparent; color:var(--ink); }
+@media(max-width:420px) { .card-tagline { font-size:11px; } }
+  </style>
+
+</head>
+<body>
+
+  <!-- Anasayfa her zaman aydınlık modda; tema scripti yalnızca oyunlarda var -->
+
+  <!-- ======================= ÜST BAR ======================= -->
+  <header class="site-header">
+    <button class="menu-btn" id="menuBtn" aria-label="Menüyü aç" aria-expanded="false" aria-controls="drawer">
+      <svg viewBox="0 0 24 24" width="25" height="25" aria-hidden="true">
+        <path d="M3 6h18M3 12h18M3 18h18" stroke="currentColor" stroke-width="2.2" stroke-linecap="round"/>
+      </svg>
+    </button>
+    <a class="brand" href="./">
+      <!-- Optimize edilmiş logo (orijinal: kök dizindeki logo.png) -->
+      <img class="brand-logo" src="assets/logo.png" alt="">
+      <span class="brand-text">TrPuzzle</span>
+    </a>
+  </header>
+
+  <!-- ======================= YAN MENÜ ======================= -->
+  <div class="overlay" id="overlay"></div>
+  <aside class="drawer" id="drawer" inert aria-hidden="true" aria-label="Oyun menüsü">
+    <div class="drawer-header">
+      <span class="drawer-title">Menü</span>
+      <button class="drawer-close" id="drawerClose" aria-label="Menüyü kapat">
+        <svg viewBox="0 0 24 24" width="21" height="21" aria-hidden="true">
+          <path d="M5 5l14 14M19 5L5 19" stroke="currentColor" stroke-width="2.2" stroke-linecap="round"/>
+        </svg>
+      </button>
+    </div>
+    <nav class="drawer-nav">
+      <div class="drawer-baslik">Oyunlar</div>
+      <details class="drawer-item">
+        <summary class="drawer-row">
+          <a class="drawer-main" href="/harfle/">
+            <span class="drawer-ico" style="--ico-size:40px;color:#3f7a38"><svg viewBox="0 0 100 100"><rect x="16.25" y="16.25" width="67.5" height="67.5" rx="12.75" fill="currentColor" stroke="#1d1f24" stroke-width="4.5"/><path d="M35.75 34 H43.75 V46.75 H56.25 V34 H64.25 V66 H56.25 V53.25 H43.75 V66 H35.75 Z" fill="#fff"/></svg></span>
+            <span class="drawer-name">Harfle</span>
+          </a>
+          <span class="drawer-toggle" aria-label="Harfle bağlantıları"><svg class="drawer-chev" viewBox="0 0 24 24" fill="none" stroke="currentColor" stroke-width="2.4" stroke-linecap="round" stroke-linejoin="round" aria-hidden="true"><path d="M6 9l6 6 6-6"/></svg></span>
+        </summary>
+        <div class="drawer-sub">
+          <a href="/harfle/#arsiv">Harfle Arşivi</a>
+        </div>
+      </details>
+      <details class="drawer-item">
+        <summary class="drawer-row">
+          <a class="drawer-main" href="/harf500/">
+            <span class="drawer-ico" style="--ico-size:37px;color:#1f8a6d"><svg viewBox="0 0 100 100"><rect x="50" y="14" width="36" height="36" fill="currentColor"/><rect x="14" y="50" width="36" height="36" fill="currentColor" fill-opacity="0.32"/><rect x="50" y="50" width="36" height="36" fill="currentColor" fill-opacity="0.66"/><g stroke="#1d1f24" stroke-width="4.5" fill="none" stroke-linejoin="round"><rect x="13.25" y="13.25" width="73.5" height="73.5" rx="5.75"/><path d="M50 13.25V86.75M13.25 50H86.75"/></g><g font-family="'Fraunces', Georgia, serif" font-weight="700" font-size="23" text-anchor="middle"><text x="32" y="40" fill="#1d1f24">H</text><text x="68" y="40" fill="#fff">5</text><text x="32" y="76" fill="#1d1f24">0</text><text x="68" y="76" fill="#fff">0</text></g></svg></span>
+            <span class="drawer-name">Harf500</span>
+          </a>
+          <span class="drawer-toggle" aria-label="Harf500 bağlantıları"><svg class="drawer-chev" viewBox="0 0 24 24" fill="none" stroke="currentColor" stroke-width="2.4" stroke-linecap="round" stroke-linejoin="round" aria-hidden="true"><path d="M6 9l6 6 6-6"/></svg></span>
+        </summary>
+        <div class="drawer-sub">
+          <a href="/harf500/#arsiv">Harf500 Arşivi</a>
+        </div>
+      </details>
+      <details class="drawer-item">
+        <summary class="drawer-row">
+          <a class="drawer-main" href="/baklava/">
+            <span class="drawer-ico" style="--ico-size:35px;color:#a97d10"><svg viewBox="0 0 100 100"><g transform="rotate(45 50 50)" stroke="#1d1f24" stroke-width="2.6" stroke-linejoin="round"><rect x="18.5" y="18.5" width="11" height="11" rx="1" fill="currentColor"/><rect x="31.5" y="18.5" width="11" height="11" rx="1" fill="currentColor" fill-opacity="0.42"/><rect x="44.5" y="18.5" width="11" height="11" rx="1" fill="currentColor"/><rect x="57.5" y="18.5" width="11" height="11" rx="1" fill="currentColor" fill-opacity="0.42"/><rect x="70.5" y="18.5" width="11" height="11" rx="1" fill="currentColor"/><rect x="18.5" y="31.5" width="11" height="11" rx="1" fill="currentColor" fill-opacity="0.42"/><rect x="44.5" y="31.5" width="11" height="11" rx="1" fill="currentColor" fill-opacity="0.42"/><rect x="70.5" y="31.5" width="11" height="11" rx="1" fill="currentColor" fill-opacity="0.42"/><rect x="18.5" y="44.5" width="11" height="11" rx="1" fill="currentColor"/><rect x="31.5" y="44.5" width="11" height="11" rx="1" fill="currentColor" fill-opacity="0.42"/><rect x="44.5" y="44.5" width="11" height="11" rx="1" fill="currentColor"/><rect x="57.5" y="44.5" width="11" height="11" rx="1" fill="currentColor" fill-opacity="0.42"/><rect x="70.5" y="44.5" width="11" height="11" rx="1" fill="currentColor"/><rect x="18.5" y="57.5" width="11" height="11" rx="1" fill="currentColor" fill-opacity="0.42"/><rect x="44.5" y="57.5" width="11" height="11" rx="1" fill="currentColor" fill-opacity="0.42"/><rect x="70.5" y="57.5" width="11" height="11" rx="1" fill="currentColor" fill-opacity="0.42"/><rect x="18.5" y="70.5" width="11" height="11" rx="1" fill="currentColor"/><rect x="31.5" y="70.5" width="11" height="11" rx="1" fill="currentColor" fill-opacity="0.42"/><rect x="44.5" y="70.5" width="11" height="11" rx="1" fill="currentColor"/><rect x="57.5" y="70.5" width="11" height="11" rx="1" fill="currentColor" fill-opacity="0.42"/><rect x="70.5" y="70.5" width="11" height="11" rx="1" fill="currentColor"/></g></svg></span>
+            <span class="drawer-name">Baklava</span>
+          </a>
+          <span class="drawer-toggle" aria-label="Baklava bağlantıları"><svg class="drawer-chev" viewBox="0 0 24 24" fill="none" stroke="currentColor" stroke-width="2.4" stroke-linecap="round" stroke-linejoin="round" aria-hidden="true"><path d="M6 9l6 6 6-6"/></svg></span>
+        </summary>
+        <div class="drawer-sub">
+          <a href="/baklava/#arsiv">Baklava Arşivi</a>
+        </div>
+      </details>
+      <details class="drawer-item">
+        <summary class="drawer-row">
+          <a class="drawer-main" href="/arala/">
+            <span class="drawer-ico" style="--ico-size:35px;color:#2b6ea8"><svg viewBox="0 0 100 100"><rect x="11" y="11" width="78" height="16" rx="4" fill="currentColor" stroke="#1d1f24" stroke-width="4.5"/><path d="M42 31 L50 40.5 L58 31 Z" fill="#1d1f24"/><rect x="11" y="44" width="78" height="14" rx="4" fill="none" stroke="#1d1f24" stroke-width="4" pathLength="168" stroke-dasharray="8 6" stroke-dashoffset="5.5"/><path d="M42 69 L50 59.5 L58 69 Z" fill="#1d1f24"/><rect x="11" y="73" width="78" height="16" rx="4" fill="currentColor" stroke="#1d1f24" stroke-width="4.5"/></svg></span>
+            <span class="drawer-name">Arala</span>
+          </a>
+          <span class="drawer-toggle" aria-label="Arala bağlantıları"><svg class="drawer-chev" viewBox="0 0 24 24" fill="none" stroke="currentColor" stroke-width="2.4" stroke-linecap="round" stroke-linejoin="round" aria-hidden="true"><path d="M6 9l6 6 6-6"/></svg></span>
+        </summary>
+        <div class="drawer-sub">
+          <a href="/arala/#arsiv">Arala Arşivi</a>
+        </div>
+      </details>
+      <details class="drawer-item">
+        <summary class="drawer-row">
+          <a class="drawer-main" href="/tilkile/">
+            <span class="drawer-ico" style="--ico-size:29px;color:#b45c10"><img src="data:image/png;base64,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" alt=""></span>
+            <span class="drawer-name">Tilkile</span>
+          </a>
+          <span class="drawer-toggle" aria-label="Tilkile bağlantıları"><svg class="drawer-chev" viewBox="0 0 24 24" fill="none" stroke="currentColor" stroke-width="2.4" stroke-linecap="round" stroke-linejoin="round" aria-hidden="true"><path d="M6 9l6 6 6-6"/></svg></span>
+        </summary>
+        <div class="drawer-sub">
+          <a href="/tilkile/#arsiv">Tilkile Arşivi</a>
+        </div>
+      </details>
+      <details class="drawer-item">
+        <summary class="drawer-row">
+          <a class="drawer-main" href="/kesme/">
+            <span class="drawer-ico" style="--ico-size:39px;color:#cc4437"><svg viewBox="0 0 100 100"><rect x="15.25" y="15.25" width="69.5" height="69.5" rx="6.75" fill="currentColor" fill-opacity="0.32" stroke="#1d1f24" stroke-width="4.5" stroke-linejoin="round"/><path d="M17.0503 82.9497 L82.9497 17.0503" stroke="#1d1f24" stroke-width="4" stroke-linecap="butt" stroke-dasharray="9.4819 7.2609"/></svg></span>
+            <span class="drawer-name">Kesme</span>
+          </a>
+          <span class="drawer-toggle" aria-label="Kesme bağlantıları"><svg class="drawer-chev" viewBox="0 0 24 24" fill="none" stroke="currentColor" stroke-width="2.4" stroke-linecap="round" stroke-linejoin="round" aria-hidden="true"><path d="M6 9l6 6 6-6"/></svg></span>
+        </summary>
+        <div class="drawer-sub">
+          <a href="/kesme/#arsiv">Kesme Arşivi</a>
+        </div>
+      </details>
+      <details class="drawer-item">
+        <summary class="drawer-row">
+          <a class="drawer-main" href="/bagla/">
+            <span class="drawer-ico" style="--ico-size:29px;color:#5f4fd1"><img src="data:image/png;base64,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" alt=""></span>
+            <span class="drawer-name">Bağla</span>
+          </a>
+          <span class="drawer-toggle" aria-label="Bağla bağlantıları"><svg class="drawer-chev" viewBox="0 0 24 24" fill="none" stroke="currentColor" stroke-width="2.4" stroke-linecap="round" stroke-linejoin="round" aria-hidden="true"><path d="M6 9l6 6 6-6"/></svg></span>
+        </summary>
+        <div class="drawer-sub">
+          <a href="/bagla/#arsiv">Bağla Arşivi</a>
+        </div>
+      </details>
+      <a class="drawer-row drawer-solo" href="/sehirle/">
+          <span class="drawer-ico" style="--ico-size:36px;color:#a8479a"><svg viewBox="-60 -60 1144 1144"><g transform="translate(0,1024) scale(0.1,-0.1)"><path d="M584 7359 c-28 -32 -51 -41 -123 -49 -62 -8 -68 -11 -106 -54 -25
+-29 -48 -46 -62 -46 -33 0 -82 -58 -68 -80 3 -5 37 -28 75 -50 l70 -41 0 -65
+c0 -41 -6 -73 -15 -88 -19 -28 -100 -82 -139 -92 l-29 -7 7 -83 c8 -101 3
+-114 -88 -204 -50 -48 -66 -71 -66 -92 0 -23 6 -29 38 -37 20 -5 74 -13 119
+-17 70 -5 87 -4 110 11 60 39 133 37 133 -4 0 -14 -19 -25 -75 -46 -41 -15
+-94 -41 -117 -58 -24 -18 -61 -39 -83 -48 -39 -16 -40 -18 -42 -65 0 -27 -10
+-69 -21 -94 -12 -24 -19 -47 -16 -49 2 -3 30 20 62 50 31 30 83 75 115 99 32
+24 67 54 77 67 23 30 159 93 199 93 23 0 37 9 58 35 17 22 42 39 65 45 42 12
+119 92 151 158 17 34 26 42 48 42 14 0 40 5 56 10 24 9 41 7 80 -8 l51 -19 42
+28 c37 25 53 29 109 29 56 0 77 -5 140 -37 79 -40 103 -43 224 -28 l58 8 42
+-47 c24 -25 47 -46 52 -46 5 0 30 -21 56 -46 l47 -46 112 -9 c136 -11 163 -24
+35 -16 -57 3 -106 0 -135 -8 -25 -7 -89 -19 -143 -28 -71 -11 -109 -22 -138
+-41 -47 -32 -49 -48 -9 -76 24 -17 39 -20 69 -15 34 6 41 3 51 -14 9 -17 8
+-21 -5 -21 -8 0 -15 -7 -15 -16 0 -15 -8 -16 -62 -9 -113 13 -220 19 -380 20
+-159 0 -196 9 -142 34 44 20 30 47 -34 65 -32 9 -68 16 -79 16 -21 0 -21 -1
+-5 -42 8 -24 22 -51 30 -60 24 -29 -18 -41 -125 -36 -90 5 -96 7 -129 39 -19
+18 -34 39 -34 47 0 12 -10 13 -52 8 -28 -4 -59 -11 -69 -17 -23 -12 -85 -12
+-128 1 -38 11 -61 -1 -142 -76 -25 -23 -55 -45 -67 -48 -16 -5 -26 -23 -38
+-66 -16 -57 -17 -58 -59 -64 -35 -6 -45 -12 -53 -34 -21 -54 -32 -108 -32
+-162 0 -30 -9 -84 -20 -119 -24 -75 -18 -89 32 -72 55 20 249 51 320 51 56 0
+69 -3 77 -19 9 -16 2 -26 -43 -65 -39 -33 -63 -46 -85 -46 -26 0 -31 -4 -31
+-25 0 -15 9 -31 25 -41 14 -9 25 -25 25 -35 0 -10 13 -33 29 -51 40 -46 46
+-71 21 -93 -39 -35 -14 -65 54 -65 44 0 60 -33 27 -57 -28 -19 -61 -55 -61
+-65 0 -12 -68 -10 -75 2 -14 23 -25 7 -25 -34 0 -36 5 -49 25 -64 16 -13 25
+-30 25 -48 0 -42 8 -49 85 -85 l70 -32 -50 -9 c-58 -9 -120 -2 -152 18 -30 19
+-31 19 -35 -18 l-3 -33 -22 42 c-19 34 -21 46 -12 71 9 27 6 37 -25 86 -30 48
+-40 56 -66 56 l-30 0 0 -70 c0 -45 6 -82 16 -102 19 -36 7 -50 -39 -46 -22 2
+-32 -4 -45 -24 -15 -25 -15 -28 3 -47 10 -12 30 -21 44 -21 16 0 40 -15 67
+-41 l42 -42 27 27 c38 38 89 36 110 -4 8 -16 15 -43 15 -60 0 -29 3 -31 29
+-29 18 2 43 -6 69 -23 22 -15 52 -30 66 -34 30 -7 40 -18 53 -59 16 -46 -9
+-80 -79 -107 -32 -13 -58 -26 -58 -29 0 -4 11 -10 24 -13 32 -8 56 -79 56
+-167 0 -54 3 -68 18 -74 12 -4 25 3 43 24 29 36 77 45 59 12 -16 -31 -12 -51
+10 -51 13 0 18 -5 14 -15 -5 -11 3 -17 25 -21 30 -6 31 -9 29 -50 -3 -40 -6
+-45 -35 -55 -24 -8 -41 -7 -67 2 -30 11 -37 10 -64 -9 -28 -21 -29 -24 -20
+-56 9 -30 13 -33 29 -23 13 8 27 7 56 -2 26 -9 69 -11 138 -7 269 17 357 17
+353 4 -3 -7 -16 -14 -31 -16 -14 -2 -31 -10 -37 -18 -7 -8 -25 -14 -41 -14
+-24 0 -30 -6 -40 -40 l-12 -40 -61 -2 c-34 -1 -83 -3 -111 -3 -31 0 -77 -11
+-123 -29 -66 -27 -72 -31 -56 -43 24 -17 140 -17 151 0 4 7 21 21 37 31 23 15
+33 16 53 7 31 -14 85 -14 118 1 14 6 28 8 32 4 12 -11 -12 -40 -38 -46 -20 -5
+-21 -7 -6 -13 21 -8 23 -37 2 -37 -12 0 -35 -28 -35 -44 0 -20 48 0 88 37 26
+24 60 48 76 55 20 9 27 18 23 31 -4 16 3 20 52 25 87 10 118 0 131 -40 9 -25
+22 -38 48 -50 21 -8 44 -25 54 -36 14 -19 19 -20 32 -9 9 7 16 19 16 25 0 6 7
+22 16 34 l15 23 41 -32 c33 -27 37 -34 24 -41 -22 -12 -20 -44 3 -60 15 -11
+19 -26 19 -71 l-1 -58 59 -54 c42 -38 65 -52 79 -49 13 3 28 -3 39 -15 14 -15
+31 -21 61 -21 32 0 46 -6 63 -25 27 -31 45 -31 86 0 18 14 44 25 59 25 32 0
+108 32 125 53 12 14 18 14 53 2 22 -8 53 -22 70 -32 36 -21 43 -14 59 62 6 27
+20 65 31 85 13 21 22 58 25 95 7 118 14 144 45 166 28 20 32 20 70 5 27 -11
+71 -16 138 -16 77 0 110 -5 145 -20 25 -10 46 -24 46 -29 0 -5 15 -13 33 -16
+17 -4 48 -20 67 -35 19 -15 91 -56 160 -90 135 -67 144 -75 225 -195 67 -101
+118 -155 145 -155 11 0 33 -9 49 -21 44 -32 101 -36 156 -9 39 19 51 21 72 11
+25 -12 42 -3 43 22 0 4 58 7 129 7 102 0 131 3 141 15 14 17 41 20 56 5 7 -7
+26 7 59 40 55 55 69 60 86 28 l11 -21 17 26 c8 15 23 27 33 27 14 0 16 6 12
+29 -5 25 3 37 78 111 45 45 101 93 123 107 22 14 51 36 65 49 20 18 41 24 102
+30 73 6 78 5 108 -20 17 -14 37 -26 43 -26 7 0 34 -18 61 -40 26 -22 55 -40
+63 -40 9 0 31 -9 49 -21 26 -16 38 -18 53 -10 11 6 39 11 63 11 24 0 48 4 54
+8 14 9 34 68 34 98 0 19 5 24 26 24 18 0 45 17 86 55 32 30 63 55 69 55 22 0
+88 -54 99 -81 7 -17 11 -53 8 -84 -4 -46 -10 -62 -38 -90 -18 -18 -45 -39 -59
+-45 -15 -6 -46 -33 -69 -60 l-43 -50 40 -95 c44 -101 47 -123 30 -174 -16 -46
+8 -68 81 -73 53 -3 54 -3 63 29 6 18 18 35 28 38 9 3 29 15 43 26 24 18 26 27
+26 90 l0 69 44 0 c25 0 56 -4 70 -10 21 -8 30 -5 55 20 l30 30 -29 15 c-49 25
+-73 70 -66 118 4 23 10 69 15 103 8 54 21 91 49 132 7 11 17 10 48 -7 21 -12
+50 -21 64 -21 55 0 72 -11 68 -42 -7 -42 28 -65 73 -49 18 6 67 11 109 11 63
+0 80 3 94 19 20 22 96 51 135 51 14 0 49 14 76 30 109 64 149 80 203 80 66 0
+142 -36 194 -94 l38 -41 218 1 c272 2 344 12 464 65 51 23 120 52 153 66 33
+14 76 40 95 59 19 18 51 40 70 48 20 8 44 24 54 35 12 13 31 21 52 21 18 0 54
+5 81 11 40 9 68 8 145 -5 118 -20 178 -20 223 -2 19 8 56 18 82 21 88 12 201
+54 225 85 13 15 38 35 56 44 31 16 35 16 65 -1 25 -15 33 -27 37 -59 4 -29 9
+-39 23 -38 9 0 31 1 48 2 39 2 90 55 109 112 7 22 24 47 38 56 22 15 28 15 68
+-1 42 -16 47 -16 93 1 39 14 54 15 81 5 18 -6 48 -11 67 -11 18 0 51 -11 73
+-25 21 -14 46 -22 55 -19 8 4 22 1 30 -6 10 -8 40 -11 91 -8 70 3 78 6 99 32
+22 28 26 29 82 22 41 -4 63 -12 76 -27 19 -23 23 -64 7 -74 -19 -12 -10 -61
+15 -85 20 -19 30 -22 43 -14 9 6 18 20 20 32 2 13 17 26 45 37 22 9 56 30 74
+46 21 18 45 29 64 29 19 0 32 6 36 18 3 9 13 25 21 34 13 16 12 18 -11 27 -15
+6 -38 30 -54 53 -15 24 -35 52 -45 64 -13 15 -20 46 -26 110 -7 87 -8 89 -34
+92 -16 2 -30 11 -33 23 -8 25 -55 49 -98 49 -31 0 -35 3 -39 32 -3 17 1 43 8
+57 8 14 14 31 14 37 0 6 11 21 25 34 14 13 25 35 25 49 0 13 9 44 21 68 27 56
+22 77 -18 81 -17 2 -37 9 -43 17 -12 15 -29 124 -36 245 -5 66 -8 77 -27 85
+-34 15 -48 53 -41 111 8 65 0 88 -31 102 -18 8 -25 19 -25 40 0 16 -5 44 -11
+62 -9 26 -9 34 2 41 18 11 66 11 88 0 12 -7 28 -2 59 17 41 26 42 28 42 82 1
+87 14 128 54 165 20 18 36 37 36 43 0 5 -29 41 -64 78 l-64 69 -123 1 c-168 1
+-288 33 -259 69 8 9 8 15 0 20 -14 9 -60 112 -60 134 0 9 -7 26 -15 38 -13 19
+-12 24 14 60 16 22 37 65 47 96 16 52 16 58 1 99 -10 24 -17 53 -17 64 0 30
+-34 70 -86 100 -31 18 -44 32 -44 48 0 12 -7 32 -16 44 -12 18 -25 22 -69 22
+-49 0 -56 3 -68 28 -8 15 -13 32 -10 38 2 5 -15 18 -37 28 -24 10 -54 36 -73
+62 -23 32 -37 43 -52 40 -15 -4 -24 3 -35 27 -14 29 -20 32 -66 35 -46 3 -54
+0 -73 -24 -12 -15 -21 -34 -21 -43 0 -31 -15 -43 -41 -32 -13 6 -82 15 -153
+20 l-129 9 -25 -29 c-22 -27 -26 -28 -42 -14 -9 8 -28 15 -43 15 -14 0 -38 5
+-54 11 -27 10 -31 8 -93 -59 -51 -55 -73 -72 -103 -77 -20 -4 -59 -25 -86 -46
+-31 -25 -59 -39 -77 -39 -51 0 -97 -19 -133 -54 -38 -37 -78 -56 -115 -56 -13
+0 -29 -7 -37 -16 -7 -9 -40 -29 -73 -46 -58 -30 -62 -30 -89 -14 -16 9 -51 16
+-80 16 -39 0 -77 11 -154 44 -89 39 -106 43 -140 35 -21 -5 -59 -9 -84 -9 -26
+0 -110 -21 -200 -49 -85 -27 -174 -52 -197 -56 -47 -8 -167 7 -269 32 -60 15
+-62 16 -68 54 -7 38 -7 39 -50 39 -36 0 -45 -4 -50 -21 -6 -18 -12 -20 -43
+-14 -20 4 -49 13 -64 21 -16 8 -62 20 -104 27 -73 11 -75 13 -99 54 -37 62
+-73 83 -155 90 l-71 6 -39 -38 c-37 -36 -39 -37 -75 -25 -27 9 -41 21 -51 45
+-10 26 -22 35 -51 42 l-38 9 -7 72 c-4 39 -15 83 -24 96 -23 36 -89 44 -176
+21 -90 -23 -165 -16 -227 22 -54 34 -106 105 -114 160 -8 47 -45 106 -70 111
+-10 2 -27 -7 -38 -21 -46 -59 -71 -66 -243 -66 -117 0 -167 3 -193 14 -20 8
+-56 15 -82 15 -26 0 -98 7 -161 16 -63 9 -130 14 -149 11 -77 -10 -168 -41
+-201 -67 -28 -22 -57 -31 -133 -43 -73 -11 -110 -23 -145 -45 -26 -16 -60 -33
+-76 -36 -16 -4 -49 -24 -75 -45 -25 -21 -65 -43 -88 -50 -24 -6 -71 -34 -105
+-62 -60 -47 -89 -63 -192 -108 -38 -17 -46 -26 -61 -70 -14 -43 -24 -55 -58
+-72 -37 -19 -54 -21 -181 -17 -141 4 -141 4 -212 41 -91 49 -133 56 -171 30
+-15 -11 -47 -23 -70 -27 -47 -7 -173 8 -247 30 -94 27 -225 45 -245 34 -28
+-14 -31 -13 -31 15 0 29 -3 30 -31 13 -18 -12 -40 -3 -184 71 -138 71 -175 95
+-234 152 -40 39 -73 80 -77 96 -4 15 -15 45 -25 65 -23 45 -24 87 -4 94 25 10
+17 33 -17 54 -44 26 -84 26 -99 -1 -7 -14 -17 -19 -31 -15 -12 2 -38 -4 -58
+-14 l-37 -19 -33 47 c-52 77 -136 132 -155 102 -3 -5 -19 -10 -35 -10 -16 0
+-32 5 -35 10 -10 16 -30 12 -51 -11z" fill="currentColor" stroke="#1d1f24" stroke-width="190" stroke-linejoin="round" stroke-linecap="round"/></g><path d="M512,398 C464,398 426,436 426,484 C426,550 512,646 512,646 C512,646 598,550 598,484 C598,436 560,398 512,398 Z" fill="#1d1f24"/><circle cx="512" cy="482" r="36" fill="#fff"/></svg></span>
+            <span class="drawer-name">Şehirle</span>
+        </a>
+      <div class="drawer-baslik">Sosyal Medya</div>
+    <div class="drawer-social">
+      <a href="https://x.com/trpuzzlecom" target="_blank" rel="noopener"><svg viewBox="0 0 24 24" fill="currentColor" aria-hidden="true"><path d="M18.9 2h3.1l-6.8 7.8 8 10.2h-6.3l-4.9-6.4-5.6 6.4H3.2l7.3-8.3L2.8 2h6.4l4.4 5.9L18.9 2zm-1.1 16.1h1.7L7.9 3.7H6L17.8 18.1z"/></svg>X: @trpuzzlecom</a>
+      <a href="https://www.instagram.com/trpuzzlecom/" target="_blank" rel="noopener"><svg viewBox="0 0 24 24" fill="none" aria-hidden="true"><rect x="3" y="3" width="18" height="18" rx="5" stroke="currentColor" stroke-width="2"/><circle cx="12" cy="12" r="4.2" stroke="currentColor" stroke-width="2"/><circle cx="17.2" cy="6.8" r="1.3" fill="currentColor"/></svg>Instagram: @trpuzzlecom</a>
+      <a href="https://www.tiktok.com/@trpuzzlecom" target="_blank" rel="noopener"><svg viewBox="0 0 24 24" fill="currentColor" aria-hidden="true"><path d="M16.5 2h-3.1v12.6a2.3 2.3 0 1 1-1.9-2.3V9.1a5.5 5.5 0 1 0 5 5.5V8.3a6.4 6.4 0 0 0 3.8 1.2V6.4a3.7 3.7 0 0 1-2.7-1.2A3.7 3.7 0 0 1 16.5 2z"/></svg>TikTok: @trpuzzlecom</a>
+    </div>
+      <div class="drawer-sep" role="separator"></div>
+      <a href="/hakkinda.html" class="drawer-page">Hakkımızda</a>
+      <a href="/iletisim.html" class="drawer-page">İletişim</a>
+      <a href="/gizlilik.html" class="drawer-page">Gizlilik ve Çerezler</a>
+      <a href="/kosullar.html" class="drawer-page">Kullanım Koşulları</a>
+    </nav>
+  </aside>
+
+  <!-- ======================= İÇERİK ======================= -->
+  <main>
+    <p class="page-eyebrow">Günlük Türkçe bulmacalar</p>
+    <h1 class="page-title">Bugün hangisiyle başlıyorsun?</h1>
+    <p class="page-subtitle">Sekiz oyun, her gün yeni bulmacalarla burada. Kahveni al, rahat bir köşe bul.</p>
+
+    <section class="daily-tracker" aria-label="Günlük oyun takibi">
+      <div class="tracker-heading">
+        <h2 class="tracker-title">Bugünkü ilerlemen</h2>
+        <span class="tracker-count" id="trackerCount" aria-live="polite">0/8 tamamlandı</span>
+      </div>
+      <nav class="tracker-games" id="trackerGames" aria-label="Oyun ilerlemelerin"></nav>
+      <div class="tracker-bar" aria-hidden="true"><div class="tracker-bar-fill" id="trackerFill"></div></div>
+    </section>
+
+    <section class="games-grid">
+<!-- ═══ HARFLE ═══ -->
+      <article class="game-card" style="--acc-dark:#79b86d; --acc-lite:#3f7a38">
+        <div class="card-top">
+          <div class="card-icon" style="--ico-size:79px"><svg viewBox="0 0 100 100"><rect x="16.25" y="16.25" width="67.5" height="67.5" rx="12.75" fill="currentColor" stroke="#1d1f24" stroke-width="4.5"/><path d="M35.75 34 H43.75 V46.75 H56.25 V34 H64.25 V66 H56.25 V53.25 H43.75 V66 H35.75 Z" fill="#fff"/></svg></div>
+            <h2 class="card-name">Harfle</h2>
+          <p class="card-tagline">Beş harfi bul, altı şansını kullan.</p>
+        </div>
+        <div class="card-bottom">
+          <div class="card-foot">
+          <a href="/harfle/" class="btn btn-play" data-game="Harfle" data-url="/harfle/">Oyna</a>
+          <a href="/harfle/#arsiv" class="btn btn-arsiv" aria-label="Harfle arşivi">Arşiv</a>
+        </div>
+        </div>
+      </article><!-- ═══ HARF500 ═══ -->
+      <article class="game-card" style="--acc-dark:#9d8fff; --acc-lite:#5f4fd1">
+        <div class="card-top">
+          <div class="card-icon" style="--ico-size:48px"><img src="data:image/png;base64,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" alt=""></div>
+            <h2 class="card-name">Bağla</h2>
+          <p class="card-tagline">Ortak bağı bul, dörtlü grupları kur.</p>
+        </div>
+        <div class="card-bottom">
+          <div class="card-foot">
+          <a href="/bagla/" class="btn btn-play" data-game="Bağla" data-url="/bagla/">Oyna</a>
+          <a href="/bagla/#arsiv" class="btn btn-arsiv" aria-label="Bağla arşivi">Arşiv</a>
+        </div>
+        </div>
+      </article><!-- ═══ PETEK ═══ -->
+      <article class="game-card" style="--acc-dark:#f0c34e; --acc-lite:#a97d10">
+        <div class="card-top">
+          <div class="card-icon" style="--ico-size:69px"><svg viewBox="0 0 100 100"><g transform="rotate(45 50 50)" stroke="#1d1f24" stroke-width="2.6" stroke-linejoin="round"><rect x="18.5" y="18.5" width="11" height="11" rx="1" fill="currentColor"/><rect x="31.5" y="18.5" width="11" height="11" rx="1" fill="currentColor" fill-opacity="0.42"/><rect x="44.5" y="18.5" width="11" height="11" rx="1" fill="currentColor"/><rect x="57.5" y="18.5" width="11" height="11" rx="1" fill="currentColor" fill-opacity="0.42"/><rect x="70.5" y="18.5" width="11" height="11" rx="1" fill="currentColor"/><rect x="18.5" y="31.5" width="11" height="11" rx="1" fill="currentColor" fill-opacity="0.42"/><rect x="44.5" y="31.5" width="11" height="11" rx="1" fill="currentColor" fill-opacity="0.42"/><rect x="70.5" y="31.5" width="11" height="11" rx="1" fill="currentColor" fill-opacity="0.42"/><rect x="18.5" y="44.5" width="11" height="11" rx="1" fill="currentColor"/><rect x="31.5" y="44.5" width="11" height="11" rx="1" fill="currentColor" fill-opacity="0.42"/><rect x="44.5" y="44.5" width="11" height="11" rx="1" fill="currentColor"/><rect x="57.5" y="44.5" width="11" height="11" rx="1" fill="currentColor" fill-opacity="0.42"/><rect x="70.5" y="44.5" width="11" height="11" rx="1" fill="currentColor"/><rect x="18.5" y="57.5" width="11" height="11" rx="1" fill="currentColor" fill-opacity="0.42"/><rect x="44.5" y="57.5" width="11" height="11" rx="1" fill="currentColor" fill-opacity="0.42"/><rect x="70.5" y="57.5" width="11" height="11" rx="1" fill="currentColor" fill-opacity="0.42"/><rect x="18.5" y="70.5" width="11" height="11" rx="1" fill="currentColor"/><rect x="31.5" y="70.5" width="11" height="11" rx="1" fill="currentColor" fill-opacity="0.42"/><rect x="44.5" y="70.5" width="11" height="11" rx="1" fill="currentColor"/><rect x="57.5" y="70.5" width="11" height="11" rx="1" fill="currentColor" fill-opacity="0.42"/><rect x="70.5" y="70.5" width="11" height="11" rx="1" fill="currentColor"/></g></svg></div>
+            <h2 class="card-name">Baklava</h2>
+          <p class="card-tagline">Karoları değiştir, 6 kelimeyi bul.</p>
+        </div>
+        <div class="card-bottom">
+          <div class="card-foot">
+          <a href="/baklava/" class="btn btn-play" data-game="Baklava" data-url="/baklava/">Oyna</a>
+          <a href="/baklava/#arsiv" class="btn btn-arsiv" aria-label="Baklava arşivi">Arşiv</a>
+        </div>
+        </div>
+      </article><!-- ═══ ARALA ═══ -->
+      <article class="game-card" style="--acc-dark:#63cdb2; --acc-lite:#1f8a6d">
+        <div class="card-top">
+          <div class="card-icon" style="--ico-size:73px"><svg viewBox="0 0 100 100"><rect x="50" y="14" width="36" height="36" fill="currentColor"/><rect x="14" y="50" width="36" height="36" fill="currentColor" fill-opacity="0.32"/><rect x="50" y="50" width="36" height="36" fill="currentColor" fill-opacity="0.66"/><g stroke="#1d1f24" stroke-width="4.5" fill="none" stroke-linejoin="round"><rect x="13.25" y="13.25" width="73.5" height="73.5" rx="5.75"/><path d="M50 13.25V86.75M13.25 50H86.75"/></g><g font-family="'Fraunces', Georgia, serif" font-weight="700" font-size="23" text-anchor="middle"><text x="32" y="40" fill="#1d1f24">H</text><text x="68" y="40" fill="#fff">5</text><text x="32" y="76" fill="#1d1f24">0</text><text x="68" y="76" fill="#fff">0</text></g></svg></div>
+            <h2 class="card-name">Harf500</h2>
+          <p class="card-tagline">Sayıları yorumla, gizli kelimeyi bul.</p>
+        </div>
+        <div class="card-bottom">
+          <div class="card-foot">
+          <a href="/harf500/" class="btn btn-play" data-game="Harf500" data-url="/harf500/">Oyna</a>
+          <a href="/harf500/#arsiv" class="btn btn-arsiv" aria-label="Harf500 arşivi">Arşiv</a>
+        </div>
+        </div>
+      </article>
+<!-- ═══ TİLKİLE ═══ -->
+      <article class="game-card" style="--acc-dark:#ff9f45; --acc-lite:#b45c10">
+        <div class="card-top">
+          <div class="card-icon" style="--ico-size:57px"><img src="data:image/png;base64,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" alt=""></div>
+            <h2 class="card-name">Tilkile</h2>
+          <p class="card-tagline">Harfleri aç, yeni kelimelerden kaçın.</p>
+        </div>
+        <div class="card-bottom">
+          <div class="card-foot">
+          <a href="/tilkile/" class="btn btn-play" data-game="Tilkile" data-url="/tilkile/">Oyna</a>
+          <a href="/tilkile/#arsiv" class="btn btn-arsiv" aria-label="Tilkile arşivi">Arşiv</a>
+        </div>
+        </div>
+      </article><!-- ═══ KESME ═══ -->
+      <article class="game-card" style="--acc-dark:#6fb5e8; --acc-lite:#2b6ea8">
+        <div class="card-top">
+          <div class="card-icon" style="--ico-size:69px"><svg viewBox="0 0 100 100"><rect x="11" y="11" width="78" height="16" rx="4" fill="currentColor" stroke="#1d1f24" stroke-width="4.5"/><path d="M42 31 L50 40.5 L58 31 Z" fill="#1d1f24"/><rect x="11" y="44" width="78" height="14" rx="4" fill="none" stroke="#1d1f24" stroke-width="4" pathLength="168" stroke-dasharray="8 6" stroke-dashoffset="5.5"/><path d="M42 69 L50 59.5 L58 69 Z" fill="#1d1f24"/><rect x="11" y="73" width="78" height="16" rx="4" fill="currentColor" stroke="#1d1f24" stroke-width="4.5"/></svg></div>
+            <h2 class="card-name">Arala</h2>
+          <p class="card-tagline">Alfabetik aralığı daralt, kelimeyi bul.</p>
+        </div>
+        <div class="card-bottom">
+          <div class="card-foot">
+          <a href="/arala/" class="btn btn-play" data-game="Arala" data-url="/arala/">Oyna</a>
+          <a href="/arala/#arsiv" class="btn btn-arsiv" aria-label="Arala arşivi">Arşiv</a>
+        </div>
+        </div>
+      </article><!-- ═══ BAĞLA ═══ -->
+      <article class="game-card" style="--acc-dark:#e08bd4; --acc-lite:#a8479a">
+        <div class="card-top">
+          <div class="card-icon" style="--ico-size:70px"><svg viewBox="-60 -60 1144 1144"><g transform="translate(0,1024) scale(0.1,-0.1)"><path d="M584 7359 c-28 -32 -51 -41 -123 -49 -62 -8 -68 -11 -106 -54 -25
+-29 -48 -46 -62 -46 -33 0 -82 -58 -68 -80 3 -5 37 -28 75 -50 l70 -41 0 -65
+c0 -41 -6 -73 -15 -88 -19 -28 -100 -82 -139 -92 l-29 -7 7 -83 c8 -101 3
+-114 -88 -204 -50 -48 -66 -71 -66 -92 0 -23 6 -29 38 -37 20 -5 74 -13 119
+-17 70 -5 87 -4 110 11 60 39 133 37 133 -4 0 -14 -19 -25 -75 -46 -41 -15
+-94 -41 -117 -58 -24 -18 -61 -39 -83 -48 -39 -16 -40 -18 -42 -65 0 -27 -10
+-69 -21 -94 -12 -24 -19 -47 -16 -49 2 -3 30 20 62 50 31 30 83 75 115 99 32
+24 67 54 77 67 23 30 159 93 199 93 23 0 37 9 58 35 17 22 42 39 65 45 42 12
+119 92 151 158 17 34 26 42 48 42 14 0 40 5 56 10 24 9 41 7 80 -8 l51 -19 42
+28 c37 25 53 29 109 29 56 0 77 -5 140 -37 79 -40 103 -43 224 -28 l58 8 42
+-47 c24 -25 47 -46 52 -46 5 0 30 -21 56 -46 l47 -46 112 -9 c136 -11 163 -24
+35 -16 -57 3 -106 0 -135 -8 -25 -7 -89 -19 -143 -28 -71 -11 -109 -22 -138
+-41 -47 -32 -49 -48 -9 -76 24 -17 39 -20 69 -15 34 6 41 3 51 -14 9 -17 8
+-21 -5 -21 -8 0 -15 -7 -15 -16 0 -15 -8 -16 -62 -9 -113 13 -220 19 -380 20
+-159 0 -196 9 -142 34 44 20 30 47 -34 65 -32 9 -68 16 -79 16 -21 0 -21 -1
+-5 -42 8 -24 22 -51 30 -60 24 -29 -18 -41 -125 -36 -90 5 -96 7 -129 39 -19
+18 -34 39 -34 47 0 12 -10 13 -52 8 -28 -4 -59 -11 -69 -17 -23 -12 -85 -12
+-128 1 -38 11 -61 -1 -142 -76 -25 -23 -55 -45 -67 -48 -16 -5 -26 -23 -38
+-66 -16 -57 -17 -58 -59 -64 -35 -6 -45 -12 -53 -34 -21 -54 -32 -108 -32
+-162 0 -30 -9 -84 -20 -119 -24 -75 -18 -89 32 -72 55 20 249 51 320 51 56 0
+69 -3 77 -19 9 -16 2 -26 -43 -65 -39 -33 -63 -46 -85 -46 -26 0 -31 -4 -31
+-25 0 -15 9 -31 25 -41 14 -9 25 -25 25 -35 0 -10 13 -33 29 -51 40 -46 46
+-71 21 -93 -39 -35 -14 -65 54 -65 44 0 60 -33 27 -57 -28 -19 -61 -55 -61
+-65 0 -12 -68 -10 -75 2 -14 23 -25 7 -25 -34 0 -36 5 -49 25 -64 16 -13 25
+-30 25 -48 0 -42 8 -49 85 -85 l70 -32 -50 -9 c-58 -9 -120 -2 -152 18 -30 19
+-31 19 -35 -18 l-3 -33 -22 42 c-19 34 -21 46 -12 71 9 27 6 37 -25 86 -30 48
+-40 56 -66 56 l-30 0 0 -70 c0 -45 6 -82 16 -102 19 -36 7 -50 -39 -46 -22 2
+-32 -4 -45 -24 -15 -25 -15 -28 3 -47 10 -12 30 -21 44 -21 16 0 40 -15 67
+-41 l42 -42 27 27 c38 38 89 36 110 -4 8 -16 15 -43 15 -60 0 -29 3 -31 29
+-29 18 2 43 -6 69 -23 22 -15 52 -30 66 -34 30 -7 40 -18 53 -59 16 -46 -9
+-80 -79 -107 -32 -13 -58 -26 -58 -29 0 -4 11 -10 24 -13 32 -8 56 -79 56
+-167 0 -54 3 -68 18 -74 12 -4 25 3 43 24 29 36 77 45 59 12 -16 -31 -12 -51
+10 -51 13 0 18 -5 14 -15 -5 -11 3 -17 25 -21 30 -6 31 -9 29 -50 -3 -40 -6
+-45 -35 -55 -24 -8 -41 -7 -67 2 -30 11 -37 10 -64 -9 -28 -21 -29 -24 -20
+-56 9 -30 13 -33 29 -23 13 8 27 7 56 -2 26 -9 69 -11 138 -7 269 17 357 17
+353 4 -3 -7 -16 -14 -31 -16 -14 -2 -31 -10 -37 -18 -7 -8 -25 -14 -41 -14
+-24 0 -30 -6 -40 -40 l-12 -40 -61 -2 c-34 -1 -83 -3 -111 -3 -31 0 -77 -11
+-123 -29 -66 -27 -72 -31 -56 -43 24 -17 140 -17 151 0 4 7 21 21 37 31 23 15
+33 16 53 7 31 -14 85 -14 118 1 14 6 28 8 32 4 12 -11 -12 -40 -38 -46 -20 -5
+-21 -7 -6 -13 21 -8 23 -37 2 -37 -12 0 -35 -28 -35 -44 0 -20 48 0 88 37 26
+24 60 48 76 55 20 9 27 18 23 31 -4 16 3 20 52 25 87 10 118 0 131 -40 9 -25
+22 -38 48 -50 21 -8 44 -25 54 -36 14 -19 19 -20 32 -9 9 7 16 19 16 25 0 6 7
+22 16 34 l15 23 41 -32 c33 -27 37 -34 24 -41 -22 -12 -20 -44 3 -60 15 -11
+19 -26 19 -71 l-1 -58 59 -54 c42 -38 65 -52 79 -49 13 3 28 -3 39 -15 14 -15
+31 -21 61 -21 32 0 46 -6 63 -25 27 -31 45 -31 86 0 18 14 44 25 59 25 32 0
+108 32 125 53 12 14 18 14 53 2 22 -8 53 -22 70 -32 36 -21 43 -14 59 62 6 27
+20 65 31 85 13 21 22 58 25 95 7 118 14 144 45 166 28 20 32 20 70 5 27 -11
+71 -16 138 -16 77 0 110 -5 145 -20 25 -10 46 -24 46 -29 0 -5 15 -13 33 -16
+17 -4 48 -20 67 -35 19 -15 91 -56 160 -90 135 -67 144 -75 225 -195 67 -101
+118 -155 145 -155 11 0 33 -9 49 -21 44 -32 101 -36 156 -9 39 19 51 21 72 11
+25 -12 42 -3 43 22 0 4 58 7 129 7 102 0 131 3 141 15 14 17 41 20 56 5 7 -7
+26 7 59 40 55 55 69 60 86 28 l11 -21 17 26 c8 15 23 27 33 27 14 0 16 6 12
+29 -5 25 3 37 78 111 45 45 101 93 123 107 22 14 51 36 65 49 20 18 41 24 102
+30 73 6 78 5 108 -20 17 -14 37 -26 43 -26 7 0 34 -18 61 -40 26 -22 55 -40
+63 -40 9 0 31 -9 49 -21 26 -16 38 -18 53 -10 11 6 39 11 63 11 24 0 48 4 54
+8 14 9 34 68 34 98 0 19 5 24 26 24 18 0 45 17 86 55 32 30 63 55 69 55 22 0
+88 -54 99 -81 7 -17 11 -53 8 -84 -4 -46 -10 -62 -38 -90 -18 -18 -45 -39 -59
+-45 -15 -6 -46 -33 -69 -60 l-43 -50 40 -95 c44 -101 47 -123 30 -174 -16 -46
+8 -68 81 -73 53 -3 54 -3 63 29 6 18 18 35 28 38 9 3 29 15 43 26 24 18 26 27
+26 90 l0 69 44 0 c25 0 56 -4 70 -10 21 -8 30 -5 55 20 l30 30 -29 15 c-49 25
+-73 70 -66 118 4 23 10 69 15 103 8 54 21 91 49 132 7 11 17 10 48 -7 21 -12
+50 -21 64 -21 55 0 72 -11 68 -42 -7 -42 28 -65 73 -49 18 6 67 11 109 11 63
+0 80 3 94 19 20 22 96 51 135 51 14 0 49 14 76 30 109 64 149 80 203 80 66 0
+142 -36 194 -94 l38 -41 218 1 c272 2 344 12 464 65 51 23 120 52 153 66 33
+14 76 40 95 59 19 18 51 40 70 48 20 8 44 24 54 35 12 13 31 21 52 21 18 0 54
+5 81 11 40 9 68 8 145 -5 118 -20 178 -20 223 -2 19 8 56 18 82 21 88 12 201
+54 225 85 13 15 38 35 56 44 31 16 35 16 65 -1 25 -15 33 -27 37 -59 4 -29 9
+-39 23 -38 9 0 31 1 48 2 39 2 90 55 109 112 7 22 24 47 38 56 22 15 28 15 68
+-1 42 -16 47 -16 93 1 39 14 54 15 81 5 18 -6 48 -11 67 -11 18 0 51 -11 73
+-25 21 -14 46 -22 55 -19 8 4 22 1 30 -6 10 -8 40 -11 91 -8 70 3 78 6 99 32
+22 28 26 29 82 22 41 -4 63 -12 76 -27 19 -23 23 -64 7 -74 -19 -12 -10 -61
+15 -85 20 -19 30 -22 43 -14 9 6 18 20 20 32 2 13 17 26 45 37 22 9 56 30 74
+46 21 18 45 29 64 29 19 0 32 6 36 18 3 9 13 25 21 34 13 16 12 18 -11 27 -15
+6 -38 30 -54 53 -15 24 -35 52 -45 64 -13 15 -20 46 -26 110 -7 87 -8 89 -34
+92 -16 2 -30 11 -33 23 -8 25 -55 49 -98 49 -31 0 -35 3 -39 32 -3 17 1 43 8
+57 8 14 14 31 14 37 0 6 11 21 25 34 14 13 25 35 25 49 0 13 9 44 21 68 27 56
+22 77 -18 81 -17 2 -37 9 -43 17 -12 15 -29 124 -36 245 -5 66 -8 77 -27 85
+-34 15 -48 53 -41 111 8 65 0 88 -31 102 -18 8 -25 19 -25 40 0 16 -5 44 -11
+62 -9 26 -9 34 2 41 18 11 66 11 88 0 12 -7 28 -2 59 17 41 26 42 28 42 82 1
+87 14 128 54 165 20 18 36 37 36 43 0 5 -29 41 -64 78 l-64 69 -123 1 c-168 1
+-288 33 -259 69 8 9 8 15 0 20 -14 9 -60 112 -60 134 0 9 -7 26 -15 38 -13 19
+-12 24 14 60 16 22 37 65 47 96 16 52 16 58 1 99 -10 24 -17 53 -17 64 0 30
+-34 70 -86 100 -31 18 -44 32 -44 48 0 12 -7 32 -16 44 -12 18 -25 22 -69 22
+-49 0 -56 3 -68 28 -8 15 -13 32 -10 38 2 5 -15 18 -37 28 -24 10 -54 36 -73
+62 -23 32 -37 43 -52 40 -15 -4 -24 3 -35 27 -14 29 -20 32 -66 35 -46 3 -54
+0 -73 -24 -12 -15 -21 -34 -21 -43 0 -31 -15 -43 -41 -32 -13 6 -82 15 -153
+20 l-129 9 -25 -29 c-22 -27 -26 -28 -42 -14 -9 8 -28 15 -43 15 -14 0 -38 5
+-54 11 -27 10 -31 8 -93 -59 -51 -55 -73 -72 -103 -77 -20 -4 -59 -25 -86 -46
+-31 -25 -59 -39 -77 -39 -51 0 -97 -19 -133 -54 -38 -37 -78 -56 -115 -56 -13
+0 -29 -7 -37 -16 -7 -9 -40 -29 -73 -46 -58 -30 -62 -30 -89 -14 -16 9 -51 16
+-80 16 -39 0 -77 11 -154 44 -89 39 -106 43 -140 35 -21 -5 -59 -9 -84 -9 -26
+0 -110 -21 -200 -49 -85 -27 -174 -52 -197 -56 -47 -8 -167 7 -269 32 -60 15
+-62 16 -68 54 -7 38 -7 39 -50 39 -36 0 -45 -4 -50 -21 -6 -18 -12 -20 -43
+-14 -20 4 -49 13 -64 21 -16 8 -62 20 -104 27 -73 11 -75 13 -99 54 -37 62
+-73 83 -155 90 l-71 6 -39 -38 c-37 -36 -39 -37 -75 -25 -27 9 -41 21 -51 45
+-10 26 -22 35 -51 42 l-38 9 -7 72 c-4 39 -15 83 -24 96 -23 36 -89 44 -176
+21 -90 -23 -165 -16 -227 22 -54 34 -106 105 -114 160 -8 47 -45 106 -70 111
+-10 2 -27 -7 -38 -21 -46 -59 -71 -66 -243 -66 -117 0 -167 3 -193 14 -20 8
+-56 15 -82 15 -26 0 -98 7 -161 16 -63 9 -130 14 -149 11 -77 -10 -168 -41
+-201 -67 -28 -22 -57 -31 -133 -43 -73 -11 -110 -23 -145 -45 -26 -16 -60 -33
+-76 -36 -16 -4 -49 -24 -75 -45 -25 -21 -65 -43 -88 -50 -24 -6 -71 -34 -105
+-62 -60 -47 -89 -63 -192 -108 -38 -17 -46 -26 -61 -70 -14 -43 -24 -55 -58
+-72 -37 -19 -54 -21 -181 -17 -141 4 -141 4 -212 41 -91 49 -133 56 -171 30
+-15 -11 -47 -23 -70 -27 -47 -7 -173 8 -247 30 -94 27 -225 45 -245 34 -28
+-14 -31 -13 -31 15 0 29 -3 30 -31 13 -18 -12 -40 -3 -184 71 -138 71 -175 95
+-234 152 -40 39 -73 80 -77 96 -4 15 -15 45 -25 65 -23 45 -24 87 -4 94 25 10
+17 33 -17 54 -44 26 -84 26 -99 -1 -7 -14 -17 -19 -31 -15 -12 2 -38 -4 -58
+-14 l-37 -19 -33 47 c-52 77 -136 132 -155 102 -3 -5 -19 -10 -35 -10 -16 0
+-32 5 -35 10 -10 16 -30 12 -51 -11z" fill="currentColor" stroke="#1d1f24" stroke-width="190" stroke-linejoin="round" stroke-linecap="round"/></g><path d="M512,398 C464,398 426,436 426,484 C426,550 512,646 512,646 C512,646 598,550 598,484 C598,436 560,398 512,398 Z" fill="#1d1f24"/><circle cx="512" cy="482" r="36" fill="#fff"/></svg></div>
+            <h2 class="card-name">Şehirle</h2>
+          <p class="card-tagline">Sıcak ve soğuk ipuçlarıyla ili bul.</p>
+        </div>
+        <div class="card-bottom">
+          <div class="card-foot">
+          <a href="/sehirle/" class="btn btn-play" data-game="Şehirle" data-url="/sehirle/">Oyna</a>
+          <span class="btn btn-arsiv btn-bosluk" aria-hidden="true"></span>
+        </div>
+        </div>
+      </article><!-- ═══ ŞEHİRLE ═══ -->
+      <article class="game-card" style="--acc-dark:#ff7a6e; --acc-lite:#cc4437">
+        <div class="card-top">
+          <div class="card-icon" style="--ico-size:77px"><svg viewBox="0 0 100 100"><rect x="15.25" y="15.25" width="69.5" height="69.5" rx="6.75" fill="currentColor" fill-opacity="0.32" stroke="#1d1f24" stroke-width="4.5" stroke-linejoin="round"/><path d="M17.0503 82.9497 L82.9497 17.0503" stroke="#1d1f24" stroke-width="4" stroke-linecap="butt" stroke-dasharray="9.4819 7.2609"/></svg></div>
+            <h2 class="card-name">Kesme</h2>
+          <p class="card-tagline">Tek çizgiyle iki eşit parçaya böl.</p>
+        </div>
+        <div class="card-bottom">
+          <div class="card-foot">
+          <a href="/kesme/" class="btn btn-play" data-game="Kesme" data-url="/kesme/">Oyna</a>
+          <a href="/kesme/#arsiv" class="btn btn-arsiv" aria-label="Kesme arşivi">Arşiv</a>
+        </div>
+        </div>
+      </article>
+    </section>
+
+    <!-- ======================= TANITIM ======================= -->
+    <section class="about-band">
+      <h2>Günlük Türkçe bulmaca durağın</h2>
+      <p>
+        TrPuzzle, Türkçe için tasarlanmış <strong>sekiz günlük bulmaca oyununu</strong>
+        tek adreste toplar. Oyunlar <strong>her gün Türkiye saatiyle 00.00'de</strong>
+        yeni bulmacasıyla yenilenir. Günlük bulmaca herkeste aynıdır, sonucunu
+        paylaşabilir ve arkadaşlarınla rekabet edebilirsin.
+      </p>
+      <p>
+        Hiçbir oyun üyelik, kayıt ya da ödeme istemez. Sadece sayfayı aç ve oyna.
+        İlerlemen ve istatistiklerin yalnızca kendi cihazında saklanır. Sitede üçüncü taraf reklam
+        sağlayıcıları aracılığıyla reklam gösterilebilir. Ayrıntılar
+        <a href="/gizlilik.html">gizlilik politikamızda</a> açıklanır.
+        Çoğu oyunda geçmiş günlerin
+        bulmacalarını arşivden oynayabilir, serilerini istatistik ekranından takip
+        edebilirsin.
+      </p>
+    </section>
+  </main>
+
+  <footer class="site-footer">
+    <p>© 2026 trpuzzle.com · Her gün yeni bulmacalar.</p>
+    <nav class="footer-links">
+      <a href="/hakkinda.html">Hakkımızda</a>
+      <a href="/iletisim.html">İletişim</a>
+      <a href="/gizlilik.html">Gizlilik ve Çerezler</a>
+      <a href="/kosullar.html">Kullanım Koşulları</a>
+    </nav>
+  </footer>
+
+  <div class="toast" id="toast" role="status" aria-live="polite"></div>
+
+  <!-- Etkileşim kodu inline gömüldü: harici script.js isteği başarısız
+       olduğunda tema düğmesi/menü çalışmama bug'ını engeller. -->
+  <script>
+/* ═══════════════════════════════════════════════
+   TrPuzzle - Anasayfa etkileşimleri
+   ═══════════════════════════════════════════════ */
+
+(function () {
+  "use strict";
+
+  /* ---------- Yan menü ---------- */
+  const menuBtn = document.getElementById("menuBtn");
+  const drawer = document.getElementById("drawer");
+  const overlay = document.getElementById("overlay");
+  const drawerClose = document.getElementById("drawerClose");
+
+  const background = document.querySelectorAll("header, main, footer");
+  let drawerTrigger = null;
+
+  function openDrawer() {
+    drawerTrigger = document.activeElement;
+    drawer.inert = false;
+    background.forEach(function (el) { el.inert = true; });
+    drawer.classList.add("open");
+    overlay.classList.add("open");
+    drawer.setAttribute("aria-hidden", "false");
+    menuBtn.setAttribute("aria-expanded", "true");
+    drawerClose.focus();
+  }
+
+  function closeDrawer() {
+    if (!drawer.classList.contains("open")) return;
+    background.forEach(function (el) { el.inert = false; });
+    if (drawerTrigger) drawerTrigger.focus();
+    drawer.inert = true;
+    drawer.classList.remove("open");
+    overlay.classList.remove("open");
+    drawer.setAttribute("aria-hidden", "true");
+    menuBtn.setAttribute("aria-expanded", "false");
+  }
+
+  menuBtn.addEventListener("click", openDrawer);
+  drawerClose.addEventListener("click", closeDrawer);
+  overlay.addEventListener("click", closeDrawer);
+
+  /* Menüde oyuna tıklamak doğrudan oyunu açar; akordeonu açmaz */
+  document.querySelectorAll(".drawer-main").forEach(function (a) {
+    a.addEventListener("click", function (e) { e.stopPropagation(); });
+  });
+  document.addEventListener("keydown", function (e) {
+    if (e.key === "Escape") closeDrawer();
+    if (e.key === "Tab" && drawer.classList.contains("open")) {
+      const items = Array.from(drawer.querySelectorAll('a[href], button, summary, [tabindex="0"]'))
+        .filter(function (el) { return el.getClientRects().length && !el.disabled; });
+      const first = items[0], last = items[items.length - 1];
+      if (e.shiftKey && document.activeElement === first) {
+        e.preventDefault(); last.focus();
+      } else if (!e.shiftKey && document.activeElement === last) {
+        e.preventDefault(); first.focus();
+      }
+    }
+  });
+
+  /* Tema düğmesi kaldırıldı - anasayfa her zaman aydınlık modda. */
+
+  /* ---------- Toast ---------- */
+  const toast = document.getElementById("toast");
+  let toastTimer = null;
+
+  function showToast(message) {
+    toast.textContent = message;
+    toast.classList.add("show");
+    clearTimeout(toastTimer);
+    toastTimer = setTimeout(function () {
+      toast.classList.remove("show");
+    }, 2000);
+  }
+
+  /* ---------- Oyna butonları ----------
+     Oyunlar yayına alındığında butona data-url ekle:
+       <a href="#" class="btn btn-play" data-game="Harfle"
+          data-url="https://harfle.example.com">Oyna</a>
+     data-url tanımlıysa oraya yönlendirir, değilse
+     "çok yakında" mesajı gösterir. */
+  const trackerGames = document.getElementById("trackerGames");
+  const trackerOrder = ["Harfle","Baklava","Bağla","Kesme","Tilkile","Arala","Şehirle","Harf500"];
+  trackerOrder.forEach(function (name) {
+    const card = Array.from(document.querySelectorAll(".game-card")).find(card => card.querySelector(".btn-play").dataset.game === name);
+    const play = card.querySelector(".btn-play");
+    const link = document.createElement("a");
+    link.className = "tracker-game";
+    link.href = play.dataset.url;
+    link.dataset.game = play.dataset.game;
+    link.setAttribute("style", card.getAttribute("style"));
+    const icon = card.querySelector(".card-icon").cloneNode(true);
+    icon.className = "tracker-icon";
+    icon.setAttribute("aria-hidden", "true");
+    link.appendChild(icon);
+    const mark = document.createElement("span");
+    mark.className = "tracker-mark";
+    mark.setAttribute("aria-hidden", "true");
+    mark.innerHTML = '<svg class="tracker-check" viewBox="0 0 16 16" fill="none" stroke="currentColor" stroke-width="2.2" stroke-linecap="round" stroke-linejoin="round"><path d="m3 8 3 3 7-7"/></svg><svg class="tracker-resume" viewBox="0 0 16 16" fill="currentColor"><path d="M5 3.5v9l7-4.5z"/></svg>';
+    link.appendChild(mark);
+    trackerGames.appendChild(link);
+  });
+
+  function updateTracker(progress) {
+    let completed = 0;
+    const links = trackerGames.querySelectorAll(".tracker-game");
+    links.forEach(function (link) {
+      const game = link.dataset.game;
+      const state = progress[game] || "new";
+      link.dataset.state = state;
+      const label = state === "completed" ? "Tamamlandı · Sonucu Gör" : state === "started" ? "Devam Et" : "Oyna";
+      link.setAttribute("aria-label", game + ": " + label);
+      link.title = game + ": " + label;
+      if (state === "completed") completed++;
+    });
+    const count = document.getElementById("trackerCount");
+    const text = completed === links.length ? "Harika, bugün hepsini tamamladın!" : completed + "/" + links.length + " tamamlandı";
+    if (count.textContent !== text) count.textContent = text;
+    document.getElementById("trackerFill").style.width = (links.length ? completed / links.length * 100 : 0) + "%";
+  }
+
+  const playLinks = document.querySelectorAll(".btn-play");
+
+  /* Aynı domaindeki oyunların mevcut kayıtlarını yalnızca okur.
+     Gün hesapları her oyunun kullandığı yerel tarih biçimiyle eşleşir;
+     arşiv ve bitmiş oyunlar bugünkü oyunu "Devam Et" yapmaz. */
+  function readProgress(key) {
+    try {
+      const value = JSON.parse(localStorage.getItem(key));
+      return value && typeof value === "object" && !Array.isArray(value) ? value : {};
+    } catch (e) { return {}; }
+  }
+
+  function hasGuesses(value) {
+    return Array.isArray(value) && value.length > 0;
+  }
+
+  function dailyProgress(now) {
+    const tr = new Date(now.getTime() + 3 * 60 * 60 * 1000);
+    const year = tr.getUTCFullYear(), month = tr.getUTCMonth(), day = tr.getUTCDate();
+    const date = year + "-" + String(month + 1).padStart(2, "0") + "-" + String(day).padStart(2, "0");
+    const dayId = Math.floor(Date.UTC(year, month, day) / 86400000);
+    const puzzleNo = dayId - Date.UTC(2026, 9, 3) / 86400000 + 1;
+    const midnight = Date.UTC(year, month, day);
+    const foxNo = Math.floor((midnight - Date.UTC(2026, 7, 1)) / 86400000) + 1;
+    const aralaDay = Math.round((midnight - Date.UTC(2026, 0, 1)) / 86400000);
+
+    const harfle = readProgress("trw-" + date);
+    const settings = readProgress("word500tr.ayarlar");
+    const level = ["kolay", "standart", "zor"].includes(settings.seviye) ? settings.seviye : "standart";
+    // Harf500 açılışta son seçilen seviyeyi yükler.
+    const harf500 = readProgress("word500tr.oyun." + level + "." + date);
+    const baklava = readProgress("petek-progress-v1")[dayId] || {};
+    const tilkile = readProgress("foximax-daily-" + foxNo);
+    const bagla = puzzleNo >= 1 ? readProgress("baglantilar.2026-10-03.gunluk." + puzzleNo) : {};
+    const sehirle = readProgress("iller-globle:daily:" + date);
+    const oldArala = readProgress("aradle_day_v1");
+    const arala = readProgress("aradle_days_v2")[aralaDay] ||
+      (oldArala.day === aralaDay ? oldArala : {});
+
+    const started = {
+      Harfle: hasGuesses(harfle.guesses) && !harfle.done && !harfle.win,
+      Harf500: harf500.surum === 1 && hasGuesses(harf500.gecmis) && !harf500.bitti && !harf500.kazandi,
+      Baklava: baklava.phase === "play" && typeof baklava.swapsLeft === "number" &&
+        baklava.swapsLeft > 0 && baklava.swapsLeft < 15,
+      Arala: typeof arala.steps === "number" && arala.steps > 0 && !arala.done && !arala.lost && !arala.g,
+      Tilkile: tilkile.status === "playing" && hasGuesses(tilkile.guessed),
+      // Kesme tek hamlede biter; kaydedilmiş, yarım kalmış bir turu yoktur.
+      Kesme: false,
+      "Bağla": bagla.durum === "oyunda" && hasGuesses(bagla.tahminler),
+      "Şehirle": hasGuesses(sehirle.guesses) && !sehirle.won && !sehirle.gaveUp
+    };
+    // Tüm günlük kayıtlar Türkiye tarihini kullanır; Kesme tek hamlede biter.
+    const kesme = readProgress("kesme2-day-" + date);
+    const aralaResult = readProgress("aradle_result_v1")[aralaDay];
+    const completed = {
+      Harfle: harfle.done === true || harfle.win === true,
+      Harf500: harf500.surum === 1 && (harf500.bitti === true || harf500.kazandi === true),
+      Baklava: baklava.phase === "win" || baklava.phase === "lose",
+      Arala: arala.done === true || arala.lost === true || arala.g === true ||
+        (typeof aralaResult === "number" && (aralaResult === -1 || (aralaResult >= 1 && aralaResult <= 5))),
+      Tilkile: tilkile.status === "won" || tilkile.status === "lost",
+      Kesme: Array.isArray(kesme.cut) && kesme.cut.length === 4,
+      "Bağla": bagla.durum === "kazandi" || bagla.durum === "kaybetti",
+      "Şehirle": sehirle.won === true || sehirle.gaveUp === true
+    };
+    const states = {};
+    Object.keys(started).forEach(function (game) {
+      states[game] = completed[game] ? "completed" : started[game] ? "started" : "new";
+    });
+    return states;
+  }
+
+  function updatePlayLabels() {
+    const progress = dailyProgress(new Date());
+    updateTracker(progress);
+    playLinks.forEach(function (link) {
+      const state = progress[link.dataset.game];
+      link.textContent = state === "completed" ? "Sonucu Gör" : state === "started" ? "Devam Et" : "Oyna";
+    });
+  }
+
+  updatePlayLabels();
+  // Geri tuşu (bfcache), başka sekmede oynama ve gün değişimi.
+  window.addEventListener("pageshow", updatePlayLabels);
+  window.addEventListener("storage", updatePlayLabels);
+  window.addEventListener("focus", updatePlayLabels);
+  document.addEventListener("visibilitychange", function () {
+    if (!document.hidden) updatePlayLabels();
+  });
+  setInterval(function () {
+    if (!document.hidden) updatePlayLabels();
+  }, 60000);
+
+  playLinks.forEach(function (link) {
+    link.addEventListener("click", function (e) {
+      const url = link.dataset.url;
+      if (url) {
+        link.setAttribute("href", url);
+        return; // normal yönlendirme çalışsın
+      }
+      e.preventDefault();
+      const game = link.dataset.game || "Bu oyun";
+      showToast(game + " çok yakında! 🚧");
+    });
+  });
+
+})();
+  </script>
+</body>
+</html>

@@ -1,0 +1,8 @@
+/* Device integration only. The web games own their typography, colors,
+   tile geometry and corner radii. */
+body.native-page { padding-top: env(safe-area-inset-top); padding-bottom: env(safe-area-inset-bottom); padding-left: env(safe-area-inset-left); padding-right: env(safe-area-inset-right); }
+.native-page #tp-splash { padding-top: env(safe-area-inset-top); padding-bottom: env(safe-area-inset-bottom); }
+#connection:not([hidden]), #load-error:not([hidden]) { position: fixed; z-index: 2147483647; top: max(8px, env(safe-area-inset-top)); left: 12px; right: 12px; margin: auto; max-width: 500px; padding: 14px; background: #fffaf0; color: #252721; border: 1px solid #aaa58e; font: 14px/1.5 system-ui; box-shadow: 0 4px 18px #0002; }
+#load-error:not([hidden]) { top: max(64px, env(safe-area-inset-top)); }
+#load-error button, #load-error a { display:inline-block; padding:12px; margin-right:8px; font:inherit; color:inherit; }
+[hidden]#connection, [hidden]#load-error { display:none!important; }

@@ -1,4 +1,4 @@
-export const isGameKey = key => /^trw-(?:\d{4}-\d{2}-\d{2}|stats|theme|cb|osk|hard|howtoSeen)$/.test(key);
+export const isGameKey = key => /^(?:trw-|word500tr\.|kelime500\.|baglantilar\.|kesme2?-|petek-|waffle-|foximax-|aradle_|iller-globle:)/.test(key);
 // Hydration completes before shared game code executes. Native preferences keep
 // the app's own records across WebView storage eviction. No server secret lives here.
 export async function installPersistence({ storage, preferences, prototype, onError = () => {} }) {
