@@ -11,3 +11,18 @@ test('packaged game contains no server data, advertising or remote website frame
   const config = JSON.parse(await readFile(new URL('../capacitor.config.json', import.meta.url)));
   assert.equal(config.webDir, 'dist'); assert.equal(config.server?.url, undefined);
 });
+
+test('all eight games and the web homepage are packaged with local navigation', async () => {
+  const games = ['harfle','harf500','bagla','baklava','kesme','tilkile','arala','sehirle'];
+  for (const game of games) {
+    const html = await readFile(new URL(`../dist/${game}/index.html`, import.meta.url), 'utf8');
+    assert.match(html, /assets\/mobile.js/);
+    assert.doesNotMatch(html, /adsbygoogle|google-adsense|privacy-controls|<iframe|src=["']https?:/);
+  }
+  const home = await readFile(new URL('../dist/index.html', import.meta.url), 'utf8');
+  assert.equal((home.match(/class="game-card"/g)||[]).length, 8);
+  for (const game of games) assert.ok(home.includes(`data-url="/${game}/"`), game);
+  assert.match(home, /trackerCount/);
+  const data = await readFile(new URL('../dist/harf500/web-3.js', import.meta.url), 'utf8');
+  assert.match(data, /HAVUZLAR = \{ kolay: \[\], standart: \[\], zor: \[\] \}/);
+});

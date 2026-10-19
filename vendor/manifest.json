@@ -1,6 +1,86 @@
 {
   "format": 1,
   "sources": {
+    "word500turkce": {
+      "repository": "bozkus24/word500turkce",
+      "commit": "ad3ed69f4d83a6908ef2e6bec2fd5d16238ff92b",
+      "files": {
+        "index.html": "feb85faf185160a455916fb098f9b8aae49a56198e2b0a7b0db7e9d3e1427874",
+        "logo.png": "422faca9029bc43e91cd736c880427d6597bcc0d752f7acff0fb598bbc7e5cd3",
+        "favicon.png": "be7d309f48cf2667c6f52e96996190a20e750006a2021fbad061d101326ec3d0"
+      }
+    },
+    "trpuzzle1": {
+      "repository": "bozkus24/trpuzzle1",
+      "commit": "c4fcfd2d52398ee0339801031982bbe1ec00a132",
+      "files": {
+        "index.html": "08957b15881649dc1ec898ab3e9ab25412ecc2b6dbb433aad8ff70512253d7d9",
+        "favicon.png": "e93b23bb55d39a250395684d5a95f3d28761f71e6ab2552b79c3d272678d66f9"
+      }
+    },
+    "trpuzzle2": {
+      "repository": "bozkus24/trpuzzle2",
+      "commit": "c9976d2bb094ab0fd4e9cc817c3710c4b2620a52",
+      "files": {
+        "index.html": "f1434f288e7d41b61ed27c4d4f6848c182bd7b481d3d28ee4d4bff21e77f5a48",
+        "logo.png": "6d6273c5311e43aca044520c8d459eda2e8370baa7b158f894053b730338b1d4",
+        "favicon.png": "e9035cf610c27ae3be4eb120ebecc20743f46f8615c3815d69fbf5457f66a8f0"
+      }
+    },
+    "trpuzzle3": {
+      "repository": "bozkus24/trpuzzle3",
+      "commit": "a6999928e99d1f8b1153ad6201acbb203e47e869",
+      "files": {
+        "index.html": "aa31aa0a705bfecd99b664a63e4a8482ee49d5040cd565566e1675aeaf79b3a8",
+        "public/favicon.png": "c28703757124ddba6d48bfd688499241611c7f616679d8713e25b214e76a4826",
+        "src/App.jsx": "c9c1d20684da7dd777b7b513914f4a66ad4b6f4db08a42dfed55dee3fe594296",
+        "src/components/DailyNext.jsx": "ca3a8c560230bc0e44221a6c95b39e7861c695b1adeccde41a76ea0b4fbbfd9e",
+        "src/components/GuessInput.jsx": "5e0be4f37ef8a5e1e532864b0a0fb19ca0c598bedd850a543c0de96a00b87984",
+        "src/components/HowToModal.jsx": "1a15f27797bd5e8f7e0f6627647243de530d34b9291c81b9d69e37f1dde70e45",
+        "src/components/ModeModal.jsx": "0167973f6b4ec6b6bd314152a5bbf0595bfd1d38fc70d10547a0868f9dabe21b",
+        "src/components/ResultModal.jsx": "276e6621e5f651d9159761972a2f75b86d8d82e14c791d7b45a17c6d14b91833",
+        "src/components/SettingsModal.jsx": "f2d2261e1089b13f4068e9dd218f72e1c6089adefae14753517104600e393e64",
+        "src/components/StatsModal.jsx": "5d7b231dbf446ad90a2be29992d953f0f6c6c998fe3eb86fb13f21ced3759840",
+        "src/components/TurkeyMap.jsx": "9073bbc430821db62dedd04bb6de0b9943d56168681d3ccfb8ba2815bee76677",
+        "src/data/land.js": "185f64dc54779cdd5075767959901ab0b6c2f2a48cffb203a99ce07752794711",
+        "src/data/provinces.geojson.json": "8fe1cf3fbac8fab8a5fe7ebfc588dd01d62802ca994bf959f715c991a8382e11",
+        "src/data/satellite-relief.jpg": "11384120c2eeb345dd53146f57a591a5cdd0996b3337eb6dc4e27f800b48161a",
+        "src/data/satellite.js": "5e57e60f7ff24e237c33be58e15a796890c09b8ad53ba0141434d9cf0991a419",
+        "src/fonts.css": "60fb36cba7541057b3c4c627a56091fa56d5f019bc27afdd4b1f6c1c56075ebf",
+        "src/lib/game.js": "5551e3d3f885dc4e9cc8f88477780d2304264f8c8bf3f97d7f1f1e96e3550f74",
+        "src/lib/provinces.js": "1794da7a1c1f65ebc575a6e8bffe5cbe9c133c7f595710f932ce13563a981125",
+        "src/lib/stats.js": "02a54dfbbb7acd4574be50f0b2b7776413dcb02db19bc942e55c68ab0f1f0038",
+        "src/logo-dark.png": "6d6273c5311e43aca044520c8d459eda2e8370baa7b158f894053b730338b1d4",
+        "src/logo.png": "ad40fae9d76d238d290e17aa36614a3ac47e05a4a05d5117ed7be3f1ea1c8442",
+        "src/main.jsx": "41ed382b6cf2bcc7db4fee33982cfa3e090a2a4980e7e52ef0012e45e3a88a20",
+        "src/styles.css": "af880f45bb6bc9b66a8d6eb54561d9eff3177bb2678c323127a4c29a2f084564"
+      }
+    },
+    "trpuzzle4": {
+      "repository": "bozkus24/trpuzzle4",
+      "commit": "597e94bed588dfa560778a00623a824162ce46f9",
+      "files": {
+        "index.html": "e04fa51b9d7eec1a01774b4055ac8a35d6706d233e1ec2af8a56376e56ec521d",
+        "favicon.png": "180a938989948011c8fe1aa31a97b287402d1b0f6e3abad725210511175404e8"
+      }
+    },
+    "trpuzzle6": {
+      "repository": "bozkus24/trpuzzle6",
+      "commit": "3d555ab6a4801ec98b257c28e9de1859114c5d16",
+      "files": {
+        "index.html": "8d74f4b47c27dc69d475a59fd16f986cbb467e2457a6010286cfddf078ea4773",
+        "favicon.png": "1028cb0089e1c279a1ecf0446eefe5ef215c02a9c10906277906cf3ab1aaf5f6"
+      }
+    },
+    "arala": {
+      "repository": "bozkus24/trpuzzle7",
+      "commit": "e93056632b2cc687450d7dfdec1d44ac9926279e",
+      "files": {
+        "index.html": "0f7290f49519d6511b3f46cd0dec86adf163c2b86d39385422c221558c01c118",
+        "favicon.png": "ac9b6ff7ecc490daaf223e92f65e18623c4ab63a1e49fe995cd0a80dae03629e",
+        "kelimehavuzu.txt": "560408f05c052b3b2133c54b2a5ecce0a8834a03d4f6ab60edbc2611c7cadc29"
+      }
+    },
     "harfle": {
       "repository": "bozkus24/trpuzzle5",
       "commit": "801671a3d6f3f22ede0455b18026cf3deadfcd0a",
@@ -17,6 +97,12 @@
       "repository": "bozkus24/trpuzzlemain",
       "commit": "fd50158ee201cab83472872f55e7593b89cb9cd3",
       "files": {
+        "index.html": "74b0af04a1c3fe9ca2b84a46ceba15e820694980ae9bc76b701c818f93545cc6",
+        "assets/tilkile.png": "196eb6c1d898675ce9c05372b3fa91d11ad879045c86f817f0acd5e7d4ab759f",
+        "assets/bagla.png": "1afdddc17080af96a49379bca68653eff04b4ce7ac3872de772eaea1d3ca179d",
+        "assets/favicon.png": "853ac14fced86bda5e76f9e6ac25c93091be55f77a6b6ce01295cb258e9a0415",
+        "assets/fonts/baloo2-700-latin.woff2": "8e7ffc9b993aa8caa89bcab81e103c9eb2da4e3e042f37b7a5115d0ddbff12c0",
+        "assets/fonts/baloo2-700-latin-ext.woff2": "c813752d171f340f7cc37e836351b6fa8f1bcb1b163f514a4ea0b0542691ea4b",
         "assets/game-clock.js": "33a273db736bf4cd43777afc13e1ee8d3912f0b03a21f38379d667c333f3d3fb",
         "assets/game-security.js": "bfea2ac970e14bbe7a1eec28c0eec98ef04018b26b815cd7ada3d75efc92dc30",
         "assets/logo.png": "4d5cd3c626400fb3ab82879bb5f408ad972908bc8234369cbf5c9ff85994f894",

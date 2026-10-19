@@ -6,8 +6,15 @@ import { execFileSync } from 'node:child_process';
 const root = path.resolve(import.meta.dirname, '..');
 const parent = path.resolve(process.argv[2] || path.join(root, '..'));
 const sources = {
+  word500turkce: ['index.html', 'logo.png', 'favicon.png'],
+  trpuzzle1: ['index.html', 'favicon.png'],
+  trpuzzle2: ['index.html', 'logo.png', 'favicon.png'],
+  trpuzzle3: ['index.html', 'public/favicon.png', ...execFileSync('git', ['ls-files', 'src'], {cwd: path.join(parent, 'trpuzzle3'), encoding: 'utf8'}).trim().split('\n')],
+  trpuzzle4: ['index.html', 'favicon.png'],
+  trpuzzle6: ['index.html', 'favicon.png'],
+  arala: ['index.html', 'favicon.png', 'kelimehavuzu.txt'],
   harfle: ['index.html', 'game.js', 'style.css', 'words.js', 'logo.png', 'favicon.png'],
-  trpuzzlemain: ['assets/game-clock.js', 'assets/game-security.js', 'assets/logo.png',
+  trpuzzlemain: ['index.html', 'assets/tilkile.png', 'assets/bagla.png', 'assets/favicon.png', 'assets/fonts/baloo2-700-latin.woff2', 'assets/fonts/baloo2-700-latin-ext.woff2', 'assets/game-clock.js', 'assets/game-security.js', 'assets/logo.png',
     'assets/fonts.css', 'assets/fonts/fraunces-600-latin.woff2', 'assets/fonts/fraunces-600-latin-ext.woff2',
     'assets/fonts/fraunces-700-latin.woff2', 'assets/fonts/fraunces-700-latin-ext.woff2']
 };
@@ -17,7 +24,7 @@ for (const [repo, files] of Object.entries(sources)) {
   const commit = execFileSync('git', ['rev-parse', 'HEAD'], { cwd: directory, encoding: 'utf8' }).trim();
   const dirty = execFileSync('git', ['status', '--porcelain', '--', ...files], { cwd: directory, encoding: 'utf8' }).trim();
   if (dirty) throw new Error(`${repo}: commit the shared source changes before syncing`);
-  manifest.sources[repo] = { repository: `bozkus24/${repo === 'harfle' ? 'trpuzzle5' : repo}`, commit, files: {} };
+  manifest.sources[repo] = { repository: `bozkus24/${repo === 'harfle' ? 'trpuzzle5' : repo === 'arala' ? 'trpuzzle7' : repo}`, commit, files: {} };
   for (const file of files) {
     const data = await readFile(path.join(directory, file));
     const target = path.join(root, 'vendor', repo, file);

@@ -7,12 +7,12 @@ import { createTransport } from './transport.js';
 import { installPersistence } from './storage.js';
 
 const native = Capacitor.isNativePlatform();
-const gamePage = location.pathname.startsWith('/harfle');
+const harflePage = location.pathname.startsWith('/harfle');
+const gamePage = /^\/(harfle|harf500|bagla|kesme|sehirle|baklava|tilkile|arala)(?:\/|$)/.test(location.pathname);
 const loadScript = src => new Promise((resolve, reject) => {
   const script = document.createElement('script'); script.src = src;
   script.onload = resolve; script.onerror = () => reject(new Error('Oyun dosyası yüklenemedi. Uygulamayı yeniden aç.')); document.body.append(script);
 });
-const read = key => { try { return JSON.parse(localStorage.getItem(key)); } catch { return null; } };
 let persistence = { flush: async () => {} };
 let lastOpen = null, apiBusy = false;
 function notice(text) {
@@ -42,7 +42,7 @@ async function main() {
   const refreshDay = () => {
     if (openedDay !== window.TrPuzzleClock.key()) {
       notice('Yeni günün bulmacası hazır. Kaydın korundu; ana sayfadan bugünkü oyunu açabilirsin.');
-      if (!gamePage) renderHome();
+      if (!gamePage) window.dispatchEvent(new Event('focus'));
     }
   };
   window.addEventListener('online', () => { notice(''); refreshDay(); });
@@ -61,7 +61,11 @@ async function main() {
   if (native) {
     await App.addListener('appStateChange', ({ isActive }) => { if (isActive) refreshDay(); else persistence.flush(); });
     await App.addListener('backButton', async () => {
-      if (!gamePage) { await persistence.flush(); await App.minimizeApp(); return; }
+      if (!gamePage) { if (closeWebDialog()) return; await persistence.flush(); await App.minimizeApp(); return; }
+      if (!harflePage) {
+        if (closeWebDialog()) return;
+        await safeNavigate('/'); return;
+      }
       const overlay = ['settings', 'howto', 'overlay'].map(id => document.getElementById(id)).find(el => el && !el.classList.contains('hidden'));
       if (overlay) { overlay.querySelector('[data-close],#modal-close,#howto-ok')?.click(); return; }
       const archive = document.getElementById('archive');
@@ -71,7 +75,7 @@ async function main() {
       await safeNavigate('/');
     });
   }
-  if (!gamePage) { renderHome(); return; }
+  if (!gamePage) { await loadWebScripts(); return; }
   window.TrPuzzleRemote = createTransport({ request, onState(state, body, data) {
     apiBusy = state === 'loading';
     document.body.classList.toggle('api-busy', apiBusy);
@@ -89,6 +93,11 @@ async function main() {
       if (body.action === 'move' && native) Haptics.impact({ style: ImpactStyle.Light }).catch(() => {});
     }
   } });
+  if (!harflePage) {
+    document.getElementById('retry-game').addEventListener('click', () => { if (!apiBusy) location.reload(); });
+    await loadWebScripts();
+    return;
+  }
   await loadScript('/assets/game-security.js');
   await loadScript('/harfle/words.js');
   // Intercept sharing before the shared handler. Cancellation never copies text.
@@ -147,20 +156,30 @@ async function main() {
     document.querySelectorAll('.key[data-key="SIL"]').forEach(el => el.setAttribute('aria-label', 'Harf sil'));
   }).observe(document.getElementById('app'), { subtree: true, childList: true, attributes: true, attributeFilter: ['class'] });
 }
-function renderHome() {
-  const clock = window.TrPuzzleClock;
-  const state = read('trw-' + clock.key());
-  const stats = read('trw-stats') || {};
-  const action = document.getElementById('play-label');
-  action.textContent = state?.done ? 'Sonucu gör' : state?.guesses?.length ? 'Kaldığın yerden devam et' : 'Bugünün kelimesini bul';
-  document.getElementById('daily-state').textContent = state?.done ? 'BUGÜN TAMAMLANDI' : state?.guesses?.length ? `${state.guesses.length}/6 TAHMİN · DEVAM EDİYOR` : 'HER GÜN YENİ BİR KELİME';
-  for (const [id, value] of [['played', stats.played], ['streak', stats.streak], ['best', stats.max]]) {
-    document.getElementById(id).textContent = Number.isSafeInteger(value) && value >= 0 ? value : 0;
+function closeWebDialog() {
+  const visible = el => el && !el.hidden && el.getClientRects().length && getComputedStyle(el).visibility !== 'hidden';
+  for (const [drawer, close] of [['#drawer.open','#drawerClose'], ['#tpDrawer.open','#tpDrawerX']]) {
+    if (visible(document.querySelector(drawer))) { document.querySelector(close)?.click(); return true; }
   }
-  const number = Math.floor((Date.parse(clock.key()) - Date.parse('2026-10-01')) / 86400000) + 1;
-  document.getElementById('puzzle-number').textContent = `BULMACA ${String(number).padStart(3, '0')}`;
-  document.getElementById('completed-label').textContent = state?.done ? 'Bugünkü Harfle tamamlandı.' : 'Günün küçük molası seni bekliyor.';
-  document.getElementById('progress-fill').style.width = state?.done ? '100%' : `${Math.min(100, (state?.guesses?.length || 0) / 6 * 100)}%`;
+  const dialogs = [...document.querySelectorAll('.perde.acik,.overlay.open,.overlay.show,.modal.open,.modal.show,.modal-overlay:not([hidden]),[role="dialog"][aria-modal="true"]')].filter(visible);
+  for (const dialog of dialogs.reverse()) {
+    const close = [...dialog.querySelectorAll('#confirm-no,[data-close],[data-kapat],[aria-label="Kapat"],.close,.close-btn,.x,button[id$="Close"],button[id$="CloseX"]')].find(visible);
+    if (close) { close.click(); return true; }
+  }
+  return false;
+}
+async function loadWebScripts() {
+  // Preserve every game's share text and let its own handlers open the phone sheet.
+  if (native) Object.defineProperty(navigator, 'share', { configurable: true, value: async data => {
+    try { await Share.share({ title: data.title || 'TrPuzzle', text: data.text, url: data.url, dialogTitle: 'Sonucunu paylaş' }); }
+    catch (error) {
+      if (/cancel|dismiss/i.test(error.message)) throw new DOMException('Paylaşım iptal edildi', 'AbortError');
+      throw error;
+    }
+  } });
+  for (const src of window.__TP_SCRIPTS__ || []) await loadScript(src);
+  document.dispatchEvent(new Event('trpuzzle:ready'));
+  document.body.dataset.mobileReady = 'true';
 }
 main().catch(error => {
   notice(error.message || 'Uygulama hazırlanamadı. Lütfen yeniden aç.');

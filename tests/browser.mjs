@@ -9,9 +9,9 @@ context.setDefaultTimeout(12000);
 const errors = []; page.on('pageerror', e => errors.push(e.message));
 await mkdir('test-results', { recursive:true });
 try {
-  await page.goto(base); await page.locator('#puzzle-number').filter({ hasText:'BULMACA' }).waitFor();
+  await page.goto(base); await page.locator('#trackerCount').filter({ hasText:'0/8' }).waitFor();
   await page.screenshot({ path:'test-results/home-390.png', fullPage:true });
-  await page.getByRole('link', { name:'Harfle oyna' }).click();
+  await page.locator('.btn-play[data-game="Harfle"]').click();
   await page.locator('#board .tile').first().waitFor();
   if (await page.locator('#howto').isVisible()) { await page.locator('#howto-dont').check(); await page.locator('#howto-ok').click(); }
   assert.equal(await page.locator('#board .tile').count(), 30);
@@ -66,7 +66,7 @@ try {
   await page.getByLabel('Tema', { exact:true }).selectOption('dark');
   await page.locator('[data-close="settings"]').click();
   assert.equal(await page.locator('body').evaluate(el => el.classList.contains('light')), false);
-  await page.goto(base); await page.locator('#play-label').filter({ hasText:'devam' }).waitFor();
+  await page.goto(base); await page.locator('.btn-play[data-game="Harfle"]').filter({ hasText:'Devam Et' }).waitFor();
   // First launch with the server unavailable shows a persistent retry action.
   const failed = await context.newPage();
   await failed.route('**/api/game', route => route.fulfill({ status:503, contentType:'application/json', body:'{"error":"SERVICE_UNAVAILABLE"}' }));
@@ -95,8 +95,8 @@ try {
   await resultPage.locator('#share-btn').click();
   assert.match(await resultPage.evaluate(() => window.sharedResult), /Harfle #\d+ 1\/6/);
   await resultPage.screenshot({ path:'test-results/result-390.png', fullPage:true });
-  await resultPage.goto(base); await resultPage.locator('#played').filter({ hasText:'1' }).waitFor();
-  assert.equal(await resultPage.locator('#best').textContent(), '1');
+  await resultPage.goto(base); await resultPage.locator('#trackerCount').filter({ hasText:'1/8' }).waitFor();
+  assert.equal(await resultPage.locator('.btn-play[data-game="Harfle"]').textContent(), 'Sonucu Gör');
   await resultContext.close();
   assert.deepEqual(errors, []);
   console.log('PASS: daily play, resume, offline retry, archive, theme, 360×640 layout, recovery, results, sharing and home stats.');
